@@ -4,6 +4,9 @@
 # Include: build_utils
 . './build_utils.ps1'
 
+# Full Build pipeline
+task Build InstallDependencies, Clean, Analyze, Test
+
 # Synopsis: Run/Publish Tests and Fail Build on Error
 task Test BeforeTest, RunTests, ConfirmTestsPassed, AfterTest
 
@@ -13,7 +16,7 @@ task . Clean, Analyze, Test, Archive, Publish
 # Synopsis: Install Build Dependencies
 task InstallDependencies {
     # Cant run an Invoke-Build Task without Invoke-Build.
-    Install-Module -Name InvokeBuild -Force
+    #Install-Module -Name InvokeBuild -Force
 
     Install-Module -Name DscResourceTestHelper -Force
     Install-Module -Name Pester -Force
@@ -75,17 +78,6 @@ task RunTests {
 
     # Save Test Results as JSON
     $testresults | ConvertTo-Json -Depth 5 | Set-Content  (Join-Path $Artifacts "PesterResults.json")
-
-    # Old: Publish Code Coverage as HTML
-    # $moduleInfo = @{
-    #     TestResults = $testResults
-    #     BuildNumber = $BuildNumber
-    #     Repository = $Settings.Repository
-    #     PercentCompliance  = $PercentCompliance
-    #     OutputFile =  (Join-Path $Artifacts "Coverage.htm")
-    # }
-    #
-    # Publish-CoverageHTML @moduleInfo
 
     # Temp: Publish Test Report
     $options = @{

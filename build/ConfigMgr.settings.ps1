@@ -2,9 +2,9 @@
 # Customize these properties and tasks
 ###############################################################################
 param(
-    $Artifacts = './artifacts',
+    $Artifacts = '../artifacts',
     $ModuleName = 'ConfigMgr',
-    $ModulePath = './ConfigMgr',
+    $ModulePath = '../ConfigMgr',
     $BuildNumber = $env:BUILD_NUMBER,
     $PercentCompliance  = '60'
 )
@@ -13,8 +13,8 @@ param(
 # Static settings -- no reason to include these in the param block
 ################################s###############################################
 $Settings = @{
-    SMBRepoName = 'DSCGallery'
-    SMBRepoPath = '\\Server01\Repo'
+    #SMBRepoName = 'DSCGallery'
+    #SMBRepoPath = '\\Server01\Repo'
 
     Author =  "Maik Koster"
     Owners = "Maik Koster"

@@ -16,25 +16,24 @@ branches:
   only:
   - master
 
-install:
-- ps: >-
-    Install-PackageProvider -Name NuGet -Force | Out-Null
+environment:
+  GitHubKey:
+    secure: sF4El1RbRQ5kkI1+K5sv9AZlwkaJE9OeOyUnTBwtVyNeo7krRP0V1C607Tal3sUQ
 
-    Install-Module -Name InvokeBuild -Force
-
-    Install-Module -Name DscResourceTestHelper -Force
-
-    Install-Module -Name Pester -Force
-
-    Install-Module -Name PSScriptAnalyzer -Force
+# Allow WMF5 (i.e. PowerShellGallery functionality)
+os: WMF 5
 
 test_script:
 - ps: >-
-    Invoke-Build -Task Clean
-
-    Invoke-Build -Task Analyze
-
-    Invoke-Build -Task Test
+    .\build\Start-Build.ps1
 
 artifacts:
 - path: artifacts\TestReport.htm
+
+on_success:
+  - git config --global credential.helper store
+  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:GitHubKey):x-oauth-basic@github.com`n"
+  - git config --global user.email "Maik.Koster@gmx.de"
+  - git config --global user.name "Maik Koster"
+  - git commit ...
+  - git push ...
