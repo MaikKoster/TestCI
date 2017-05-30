@@ -35,3 +35,6 @@ test_script:
     Invoke-Build -Task Analyze
 
     Invoke-Build -Task Test
+
+artifacts:
+- path: artifacts\TestReport.htm
