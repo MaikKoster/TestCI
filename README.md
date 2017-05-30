@@ -1,3 +1,5 @@
+https://ci.appveyor.com/api/projects/status/sn9cxw8h026yfpb4/branch/master?svg=true
+
 # ConfigMgr Module
 
 The "ConfigMgr" PowerShell module is used to directly access the ConfigMgr WMI provider.
