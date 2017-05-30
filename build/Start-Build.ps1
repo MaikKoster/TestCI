@@ -6,5 +6,5 @@ param(
 Install-PackageProvider -Name NuGet -Force | Out-Null
 Install-Module -Name InvokeBuild -Force
 
-Invoke-Build -Task $Task
+Invoke-Build -File ".\Build\ConfigMgr.Build.ps1" -Task $Task
 
