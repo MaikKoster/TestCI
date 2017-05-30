@@ -34,7 +34,7 @@ task Clean BeforeClean, {
 }, AfterClean
 
 # Synopsis: Lint Code with PSScriptAnalyzer
-task Analyze BeforeAnalyze, {
+task Analyze Clean, BeforeAnalyze, {
     $scriptAnalyzerParams = @{
         Path = $ModulePath
         Severity = @('Error', 'Warning')
