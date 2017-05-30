@@ -25,15 +25,8 @@ task InstallDependencies {
 
 # Synopsis: Clean Artifacts Directory
 task Clean BeforeClean, {
-    if(Test-Path -Path $Artifacts)
-    {
-        Remove-Item "$Artifacts/*" -Recurse -Force
-    }
-
+    if(Test-Path -Path $Artifacts) { Remove-Item "$Artifacts/*" -Recurse -Force }
     New-Item -ItemType Directory -Path $Artifacts -Force | Out-Null
-
-    # Temp
-    #& git clone https://github.com/MaikKoster/ConfigMgr.Module.git
 }, AfterClean
 
 # Synopsis: Lint Code with PSScriptAnalyzer
@@ -59,7 +52,9 @@ task Analyze BeforeAnalyze, {
 
 # Synopsis: Test the project with Pester. Publish Test and Coverage Reports
 task RunTests {
+    write-host "Modulepath: $ModulePath"
     $invokePesterParams = @{
+        Script = "..\"
         OutputFile =  (Join-Path $Artifacts "TestResults.xml")
         OutputFormat = 'NUnitXml'
         Strict = $true
