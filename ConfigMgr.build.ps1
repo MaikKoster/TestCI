@@ -107,7 +107,7 @@ task RunTests {
 
     if ($Env:APPVEYOR) {
         $wc = New-Object 'System.Net.WebClient'
-        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Join-Path $Artifacts "TestResults.xml"))
+        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path(Join-Path $Artifacts "TestResults.xml")))
     }
 }
 
