@@ -27,7 +27,7 @@ task Clean BeforeClean, {
         Remove-Item "$Artifacts/*" -Recurse -Force
     }
 
-    New-Item -ItemType Directory -Path $Artifacts -Force
+    New-Item -ItemType Directory -Path $Artifacts -Force | Out-Null
 
     # Temp
     #& git clone https://github.com/MaikKoster/ConfigMgr.Module.git
@@ -102,6 +102,13 @@ task RunTests {
 
     #. ".\PSTestReport\Invoke-PSTestReport.ps1" @options
     . ".\Invoke-PSTestReport.ps1" @options
+
+    # Upload Tests to AppVeyor if running in CI environment
+
+    if ($Env:APPVEYOR) {
+        $wc = New-Object 'System.Net.WebClient'
+        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestResults.xml))
+    }
 }
 
 # Synopsis: Throws and error if any tests do not pass for CI usage
