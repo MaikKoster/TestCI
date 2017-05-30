@@ -1,0 +1,35 @@
+# Disable automatic builds
+build: off
+
+# Version number
+version: 0.1.{build}
+
+skip_commits:
+  files:
+    - README.md
+  message: /updated readme.*|update readme.*s|update docs.*|update version.*|update appveyor.*/
+
+pull_requests:
+  do_not_increment_build_number: true
+
+branches:
+  only:
+  - master
+
+install:
+- ps: >-
+    Install-PackageProvider -Name NuGet -Force | Out-Null
+
+    Install-Module -Name InvokeBuild -Force
+
+    Install-Module -Name DscResourceTestHelper -Force
+
+    Install-Module -Name Pester -Force
+
+    Install-Module -Name PSScriptAnalyzer -Force
+
+test_script:
+- ps: >-
+    Invoke-Build -Task Analyze
+
+    Invoke-Build -Task Test
