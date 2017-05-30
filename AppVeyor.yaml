@@ -30,6 +30,8 @@ install:
 
 test_script:
 - ps: >-
+    Invoke-Build -Task Clean
+
     Invoke-Build -Task Analyze
 
     Invoke-Build -Task Test
