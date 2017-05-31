@@ -41,19 +41,8 @@ init:
   - git config --global user.email "Maik.Koster@gmx.de"
   - git config --global user.name "Maik Koster"
   - ps: |
-      if ((get-module InvokeBuild -ListAvailable) -eq $null) {
-          Write-Host -NoNewLine "      Installing InvokeBuild module"
-          $null = Install-Module InvokeBuild
-          Write-Host -ForegroundColor Green '...Installed!'
-      }
-
-      if (get-module InvokeBuild -ListAvailable) {
-          Write-Host -NoNewLine "      Importing InvokeBuild module"
-          Import-Module InvokeBuild -Force
-          Write-Host -ForegroundColor Green '...Loaded!'
-      } else {
-          throw 'How did you even get here?'
-      }
+      Install-PackageProvider -Name NuGet -Force | Out-Null
+      Install-Module Invoke-Build -Force
 
       Invoke-Build -Task Configure
 
