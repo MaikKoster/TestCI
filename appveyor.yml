@@ -31,6 +31,15 @@ os: WMF 5
 # Build tasks are driven by PowerShell InvokeBuild Module
 # Must be present to run remaining tasks
 install:
+
+
+# Prepare Git and Build environment
+init:
+  - git config --global core.autocrlf true
+  - git config --global credential.helper store
+  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:GitHubKey):x-oauth-basic@github.com`n"
+  - git config --global user.email "Maik.Koster@gmx.de"
+  - git config --global user.name "Maik Koster"
   - ps: |
       if ((get-module InvokeBuild -ListAvailable) -eq $null) {
           Write-Host -NoNewLine "      Installing InvokeBuild module"
@@ -46,14 +55,7 @@ install:
           throw 'How did you even get here?'
       }
 
-# Prepare Git and Build environment
-init:
-  - git config --global core.autocrlf true
-  - git config --global credential.helper store
-  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:GitHubKey):x-oauth-basic@github.com`n"
-  - git config --global user.email "Maik.Koster@gmx.de"
-  - git config --global user.name "Maik Koster"
-  - ps: Invoke-Build -Task Configure
+      Invoke-Build -Task Configure
 
 test_script:
   - ps: Invoke-Build -Task RunTests
