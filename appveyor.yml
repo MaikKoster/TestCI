@@ -51,8 +51,9 @@ artifacts:
 on_success:
   - git checkout master
   - git add --all
+  - git reset -- ConfigMgr.zip
   - git status
-  - git commit -s -m "Update version to (new)"
+  - git commit -s -m "Update version to %APPVEYOR_BUILD_VERSION%"
   - git push origin master
 
 deploy:
