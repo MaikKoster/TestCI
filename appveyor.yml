@@ -57,8 +57,11 @@ artifacts:
 
 on_success:
   - ps: Push-AppveyorArtifact "$ScratchPath\TestResults.xml"
-#  - git commit ...
-#  - git push ...
+  - git checkout master
+  - git add --all
+  - git status
+  - git commit -s -m "Update version to (new)"
+  - git push origin master
 
 deploy:
   release: myproduct-v$(appveyor_build_version)
