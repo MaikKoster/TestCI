@@ -19,21 +19,23 @@ branches:
 environment:
   GitHubKey:
     secure: sF4El1RbRQ5kkI1+K5sv9AZlwkaJE9OeOyUnTBwtVyNeo7krRP0V1C607Tal3sUQ
+  NuGetKey:
+    secure:
 
 # Allow WMF5 (i.e. PowerShellGallery functionality)
 os: WMF 5
 
 test_script:
-- ps: >-
-    .\build\Start-Build.ps1
+  - ps: .\Build.ps1
+    git config --global credential.helper store
+  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:GitHubKey):x-oauth-basic@github.com`n"
+  - git config --global user.email "Maik.Koster@gmx.de"
+  - git config --global user.name "Maik Koster"
 
 artifacts:
 - path: artifacts\TestReport.htm
 
 on_success:
-  - git config --global credential.helper store
-  - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:GitHubKey):x-oauth-basic@github.com`n"
-  - git config --global user.email "Maik.Koster@gmx.de"
-  - git config --global user.name "Maik Koster"
+  -
 #  - git commit ...
 #  - git push ...

@@ -1,33 +1,155 @@
-# Include: Settings
-. './ConfigMgr.settings.ps1'
+param (
+	[string]$ReleaseNotes = $null
+)
 
-# Include: build_utils
-. './build_utils.ps1'
-
-# Full Build pipeline
-task Build InstallDependencies, Clean, Analyze, Test
-
-# Synopsis: Run/Publish Tests and Fail Build on Error
-task Test BeforeTest, RunTests, ConfirmTestsPassed, AfterTest
-
-# Synopsis: Run full Pipleline.
-task . Clean, Analyze, Test, Archive, Publish
-
-# Synopsis: Install Build Dependencies
-task InstallDependencies {
-    # Cant run an Invoke-Build Task without Invoke-Build.
-    #Install-Module -Name InvokeBuild -Force
-
-    Install-Module -Name DscResourceTestHelper -Force
-    Install-Module -Name Pester -Force
-    Install-Module -Name PSScriptAnalyzer -Force
+if (Test-Path '.\build\.buildenvironment.ps1') {
+    . '.\build\.buildenvironment.ps1'
+} else {
+    Write-Error "Without a build environment file we are at a loss as to what to do!"
 }
 
+# You really shouldn't change this for a powershell module (if you want it to publish to the psgallery correctly)
+$CurrentReleaseFolder = $ModuleToBuild
+
+# Put together our full paths. Generally leave these alone
+$ModuleFullPath = (Get-Item "$($ModuleToBuild).psm1").FullName
+$ScriptRoot = Split-Path $ModuleFullPath
+$ScratchPath = Join-Path $ScriptRoot $ScratchFolder
+$ModuleManifestFullPath = (Get-Item "$($ModuleToBuild).psd1").FullName
+$ReleasePath = Join-Path $ScriptRoot $BaseReleaseFolder
+$CurrentReleasePath = Join-Path $ReleasePath $CurrentReleaseFolder
+$StageReleasePath = Join-Path $ScratchPath $BaseReleaseFolder   # Just before releasing the module we stage some changes in this location.
+
+# These are required for a full build process and will be automatically installed if they aren't available
+$RequiredModules = @('BuildHelpers', 'PlatyPS', 'PSScriptAnalyzer', 'Pester')
+
+# Used later to determine if we are in a configured state or not
+$IsConfigured = $False
+
+# Used to update our function CBH to external help reference
+$ExternalHelp = @"
+<#
+    .EXTERNALHELP $($ModuleToBuild)-help.xml
+    #>
+"@
+
+# Include: Settings
+#. './ConfigMgr.settings.ps1'
+
+# Include: build_utils
+#. './build_utils.ps1'
+
+# Full Build pipeline
+#task Build InstallDependencies, Clean, Analyze, Test
+
+# Synopsis: Run/Publish Tests and Fail Build on Error
+#task Test Clean, Analyze, BeforeTest, RunTests, ConfirmTestsPassed, AfterTest
+
+# Synopsis: Run full Pipleline.
+#task . Clean, Analyze, Test, Archive, Publish
+
+#Synopsis: Validate system requirements are met
+task ValidateRequirements {
+    Write-Host -NoNewLine '      Running Powershell version 5?'
+    assert ($PSVersionTable.PSVersion.Major.ToString() -eq '5') 'Powershell 5 is required for this build to function properly (you can comment this assert out if you are able to work around this requirement)'
+    Write-Host -ForegroundColor Green '...Yup!'
+}
+
+
+#Synopsis: Load required modules if available. Otherwise try to install, then load it.
+task LoadRequiredModules {
+    $RequiredModules | Foreach {
+        if ((get-module $_ -ListAvailable) -eq $null) {
+            Write-Host -NoNewLine "      Installing $($_) Module"
+            $null = Install-Module $_
+            Write-Host -ForegroundColor Green '...Installed!'
+        }
+
+        if (get-module $_ -ListAvailable) {
+            Write-Host -NoNewLine "      Importing $($_) Module"
+            Import-Module $_ -Force
+            Write-Host -ForegroundColor Green '...Loaded!'
+        } else {
+            throw 'How did you even get here?'
+        }
+    }
+}
+
+task Configure ValidateRequirements, LoadRequiredModules, {
+    # If we made it this far then we are configured!
+    $Script:IsConfigured = $True
+    Write-Host -NoNewline '      Configure build environment'
+    Write-Host -ForegroundColor Green '...configured!'
+}
+
+# Synopsis: Install Build Dependencies
+#task InstallDependencies {
+    # Cant run an Invoke-Build Task without Invoke-Build.
+    # Should be installed via "Start-Build.ps1"
+    #Install-Module -Name InvokeBuild -Force
+
+#    Install-Module -Name DscResourceTestHelper -Force
+#    Install-Module -Name Pester -Force
+#    Install-Module -Name PSScriptAnalyzer -Force
+#    Install-Module -Name BuildHelpers -Force
+#}
+
 # Synopsis: Clean Artifacts Directory
-task Clean BeforeClean, {
-    if(Test-Path -Path $Artifacts) { Remove-Item "$Artifacts/*" -Recurse -Force }
+task Clean {
+    Write-Host -NoNewLine "      Clean up our scratch/staging directory at $($ScratchPath)"
+    if(Test-Path -Path $ScratchPath) { Remove-Item "$ScratchPath/*" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null}
     New-Item -ItemType Directory -Path $Artifacts -Force | Out-Null
-}, AfterClean
+    Write-Host -ForegroundColor Green '...Complete!'
+}
+
+# Synopsis: Create base content tree in scratch staging area
+task PrepareStage {
+    # Create the directories
+    $null = New-Item "$($ScratchPath)\src" -ItemType:Directory -Force
+    $null = New-Item $StageReleasePath -ItemType:Directory -Force
+
+    Copy-Item -Path "$($ScriptRoot)\*.psm1" -Destination $ScratchPath
+    Copy-Item -Path "$($ScriptRoot)\*.psd1" -Destination $ScratchPath
+    Copy-Item -Path "$($ScriptRoot)\$($PublicFunctionSource)" -Recurse -Destination "$($ScratchPath)\$($PublicFunctionSource)"
+    Copy-Item -Path "$($ScriptRoot)\$($PrivateFunctionSource)" -Recurse -Destination "$($ScratchPath)\$($PrivateFunctionSource)"
+    Copy-Item -Path "$($ScriptRoot)\$($OtherModuleSource)" -Recurse -Destination "$($ScratchPath)\$($OtherModuleSource)"
+    Copy-Item -Path "$($ScriptRoot)\en-US" -Recurse -Destination $ScratchPath
+}
+
+# Synopsis: Assemble the module for release
+task CreateModulePSM1 {
+    $CombineFiles = "## OTHER MODULE FUNCTIONS AND DATA ##`r`n`r`n"
+    Write-Host "      Other Source Files: $($ScratchPath)\$($OtherModuleSource)"
+    Get-childitem  (Join-Path $ScratchPath "$($OtherModuleSource)\*.ps1") | foreach {
+        Write-Host "             $($_.Name)"
+        $CombineFiles += (Get-content $_ -Raw) + "`r`n`r`n"
+    }
+    Write-Host -NoNewLine "      Combining other source files"
+    Write-Host -ForegroundColor Green '...Complete!'
+
+    $CombineFiles += "## PRIVATE MODULE FUNCTIONS AND DATA ##`r`n`r`n"
+    Write-Host  "      Private Source Files: $($ScratchPath)\$($PrivateFunctionSource)"
+    Get-childitem  (Join-Path $ScratchPath "$($PrivateFunctionSource)\*.ps1") | foreach {
+        Write-Host "             $($_.Name)"
+        $CombineFiles += (Get-content $_ -Raw) + "`r`n`r`n"
+    }
+    Write-Host -NoNewLine "      Combining private source files"
+    Write-Host -ForegroundColor Green '...Complete!'
+
+    $CombineFiles += "## PUBLIC MODULE FUNCTIONS AND DATA ##`r`n`r`n"
+    Write-Host  "      Public Source Files: $($PublicFunctionSource)"
+    Get-childitem  (Join-Path $ScratchPath "$($PublicFunctionSource)\*.ps1") | foreach {
+        Write-Host "             $($_.Name)"
+        $CombineFiles += (Get-content $_ -Raw) + "`r`n`r`n"
+    }
+    Write-Host -NoNewline "      Combining public source files"
+    Write-Host -ForegroundColor Green '...Complete!'
+
+    Set-Content $Script:ReleaseModule ($CombineFiles) -Encoding UTF8
+    Write-Host -NoNewLine '      Combining module functions and data into one PSM1 file'
+    Write-Host -ForegroundColor Green '...Complete!'
+}
+
 
 # Synopsis: Lint Code with PSScriptAnalyzer
 task Analyze BeforeAnalyze, {
@@ -98,6 +220,13 @@ task RunTests {
     }
 }
 
+task UpdateModuleManifest {
+    if ($Env:APPVEYOR) {
+        Update-Metadata -Path (Resolve-Path(Join-Path $ModulePath -ChildPath "$ModuleName.psd1")) -PropertyName ModuleVersion -Value "$Env:APPVEYOR_MODULE_VERSION"
+        Set-ModuleFunctions -Path (Resolve-Path(Join-Path $ModulePath -ChildPath "$ModuleName.psd1"))
+    }
+}
+
 # Synopsis: Throws and error if any tests do not pass for CI usage
 task ConfirmTestsPassed {
     # Fail Build after reports are created, this allows CI to publish test results before failing
@@ -147,3 +276,7 @@ task Publish BeforePublish, {
 
     Publish-SMBModule @moduleInfo -Verbose
 }, AfterPublish
+
+task BeforePublish {
+    #
+}

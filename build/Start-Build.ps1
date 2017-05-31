@@ -1,10 +1,21 @@
-param(
-    $Task = 'Build'
-)
+#Requires -Version 5
+Param( $Task = "Build")
 
-# InvokeBuild is required to drive all further steps
-Install-PackageProvider -Name NuGet -Force | Out-Null
-Install-Module -Name InvokeBuild -Force
+# Ensure InvokeBuild is installed to drive rest of the build process
+if ((get-module InvokeBuild -ListAvailable) -eq $null) {
+    $null = Install-Module InvokeBuild
+}
 
-Invoke-Build -File ".\Build\ConfigMgr.Build.ps1" -Task $Task
+if (Get-Module InvokeBuild -ListAvailable) {
+    Import-Module InvokeBuild -Force
+} else {
+    throw 'How did you even get here?'
+}
 
+# Kick off the standard build
+try {
+    Invoke-Build -File ".\build\ConfigMgr.Build.ps1" -Task $Task
+} catch {
+    Write-Host -ForegroundColor Red 'Build Failed with the following error:'
+    Write-Output $_
+}
