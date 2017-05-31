@@ -7,6 +7,9 @@ version: 0.1.{build}
 skip_commits:
   files:
     - README.md
+    - appveyor.yml
+    - docs/*
+    - .vscode
   message: /updated readme.*|update readme.*s|update docs.*|update version.*|update appveyor.*/
 
 pull_requests:
@@ -20,22 +23,61 @@ environment:
   GitHubKey:
     secure: sF4El1RbRQ5kkI1+K5sv9AZlwkaJE9OeOyUnTBwtVyNeo7krRP0V1C607Tal3sUQ
   NuGetKey:
-    secure:
+    secure: JIP/CzuBZTaDq9NS7FAzcAjZVq0kWfM1+KVMDm3IvbIFDdD1RX0MHShhYpohD3Iv
 
 # Allow WMF5 (i.e. PowerShellGallery functionality)
 os: WMF 5
 
-test_script:
-  - ps: .\Build.ps1
-    git config --global credential.helper store
+# Build tasks are driven by PowerShell InvokeBuild Module
+# Must be present to run remaining tasks
+install:
+  - ps: |
+      if ((get-module InvokeBuild -ListAvailable) -eq $null) {
+          Write-Host -NoNewLine "      Installing InvokeBuild module"
+          $null = Install-Module InvokeBuild
+          Write-Host -ForegroundColor Green '...Installed!'
+      }
+
+      if (get-module InvokeBuild -ListAvailable) {
+          Write-Host -NoNewLine "      Importing InvokeBuild module"
+          Import-Module InvokeBuild -Force
+          Write-Host -ForegroundColor Green '...Loaded!'
+      } else {
+          throw 'How did you even get here?'
+      }
+
+# Prepare Git and Build environment
+init:
+  - git config --global core.autocrlf true
+  - git config --global credential.helper store
   - ps: Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:GitHubKey):x-oauth-basic@github.com`n"
   - git config --global user.email "Maik.Koster@gmx.de"
   - git config --global user.name "Maik Koster"
+  - ps: Invoke-Build -Task Configure
+
+test_script:
+  - ps: Invoke-Build -Task RunTests
+
+build_script:
+  - ps: Invoke-Build -Task
 
 artifacts:
-- path: artifacts\TestReport.htm
+  - path: artifacts/ConfigMgr
 
 on_success:
-  -
+  - ps: Push-AppveyorArtifact "$ScratchPath\TestResults.xml"
 #  - git commit ...
 #  - git push ...
+
+deploy:
+  release: myproduct-v$(appveyor_build_version)
+  description: 'Release description'
+  provider: GitHub
+  auth_token:
+    secure: sF4El1RbRQ5kkI1+K5sv9AZlwkaJE9OeOyUnTBwtVyNeo7krRP0V1C607Tal3sUQ>
+  artifact: ConfigMgr.zip            # upload all NuGet packages to release assets
+  draft: true
+  prerelease: false
+  on:
+    branch: master                 # release from master branch only
+    appveyor_repo_tag: true

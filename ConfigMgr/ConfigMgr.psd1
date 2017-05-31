@@ -85,18 +85,18 @@ PowerShellVersion = '3.0'
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess
 # PrivateData = ''
-PrivateData = @{ 
+PrivateData = @{
 
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        # Tags = @()
+        Tags = @("SCCM", "ConfigMgr", "Configuration Manager")
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://github.com/MaikKoster/TestCI/blob/master/LICENSE'
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://github.com/MaikKoster/TestCI'
 
         # A URL to an icon representing this module.
         # IconUri = ''
