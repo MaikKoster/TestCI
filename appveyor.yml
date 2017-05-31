@@ -43,7 +43,8 @@ init:
   - ps: |
       Install-PackageProvider -Name NuGet -Force | Out-Null
       Install-Module InvokeBuild -Force
-
+      Resolve-Path ".\"
+      Test-Path ".\.Build.ps1"
       Invoke-Build -Task Configure
 
 test_script:
@@ -69,7 +70,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: sF4El1RbRQ5kkI1+K5sv9AZlwkaJE9OeOyUnTBwtVyNeo7krRP0V1C607Tal3sUQ>
-  artifact: ConfigMgr.zip            # upload all NuGet packages to release assets
+  artifact: ConfigMgr.zip
   draft: true
   prerelease: false
   on:
