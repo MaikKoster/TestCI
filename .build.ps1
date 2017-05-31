@@ -212,7 +212,11 @@ task PrepareStage {
     if (Test-Path "$($ModulePath)\$($OtherModuleSource)") {
         Copy-Item -Path "$($ModulePath)\$($OtherModuleSource)" -Recurse -Destination "$($ScratchPath)\$($OtherModuleSource)"
     }
-    Copy-Item -Path "$($ModulePath)\en-US" -Recurse -Destination $ScratchPath
+    if (Test-Path "$($ModulePath)\en-US") {
+        Copy-Item -Path "$($ModulePath)\en-US" -Recurse -Destination $ScratchPath
+    } else {
+        $null = New-Item "$ScratchPath\en-US" -ItemType:Directory -Force
+    }
 }, GetPublicFunctions
 
 # Synopsis:  Collect a list of our public methods for later module manifest updates
