@@ -42,7 +42,7 @@ init:
   - git config --global user.name "Maik Koster"
   - ps: |
       Install-PackageProvider -Name NuGet -Force | Out-Null
-      Install-Module Invoke-Build -Force
+      Install-Module InvokeBuild -Force
 
       Invoke-Build -Task Configure
 
