@@ -1,8 +1,8 @@
-﻿---
+---
 Module Name: ConfigMgr
 Module Guid: 9ad632f2-7a0e-48a3-8d62-3b44c063e0f4
 Download Help Link: https://github.com/MaikKoster/TestCI/release/ConfigMgr/docs/ConfigMgr.md
-Help Version: 0.1.1
+Help Version: 0.1.28
 Locale: en-US
 ---
 
@@ -40,5 +40,6 @@ Updates a ConfigMgr object.
 
 ### [Write-Log](Write-Log.md)
 Write-Log writes a message to a specified log file with the current time stamp.
+
 
 
