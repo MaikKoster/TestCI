@@ -155,7 +155,7 @@ task LoadModule {
     }
 }
 
-# Synopsis: Set $script:Version.
+# Synopsis: Update current module manifest with the version
 task Version {
     # Version file is used for local builds
     # Build version will be handled by CI system
@@ -166,9 +166,9 @@ task Version {
 
     $Script:Version = [version](Get-Content $VersionFile)
 
-    #Write-Host -NoNewLine '      Manifest version and the release version (version.txt) are the same?'
-    #assert ( ($Script:Module).Version.ToString() -eq (($Script:Version).ToString())) "The module manifest version ($(($Script:Module).Version.ToString())) and release version ($($Script:Version)) are mismatched. These must be the same before continuing. Consider running the UpdateVersion task to make the module manifest version the same as the reslease version."
-    #Write-Host -ForegroundColor Green '...Yup!'
+    Write-Host -NoNewline "      Attempting to update the module manifest version ($ModVer) to $(($Script:Version).ToString())"
+    Update-Metadata -Path $ModuleManifestFullPath -PropertyName ModuleVersion -Value $Script:Version
+    Write-Host -ForegroundColor Green '...Updated!'
 }
 
 #Synopsis: Validate script requirements are met, load required modules, load project manifest and module, and load additional build tools.
@@ -647,6 +647,7 @@ task Build `
         RunTests,
         PrepareStage,
         CreateHelp,
+        PushHelpFiles,
         CreateModulePSM1
 
 # Synopsis: Build without code formatting
