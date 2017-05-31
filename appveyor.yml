@@ -31,11 +31,7 @@ os: WMF 5
 # Build tasks are driven by PowerShell InvokeBuild Module
 # Must be present to run remaining tasks
 install:
-  - ps: |
-      Resolve-Path ".\"
-      Test-Path ".\.Build.ps1"
-      Get-ChildItem
-      Invoke-Build -Task Configure
+  - ps: Invoke-Build -Task Configure
 
 # Prepare Git and Build environment
 init:
@@ -48,12 +44,11 @@ init:
       Install-PackageProvider -Name NuGet -Force | Out-Null
       Install-Module InvokeBuild -Force
 
-
 test_script:
   - ps: Invoke-Build -Task RunTests
 
 build_script:
-  - ps: Invoke-Build -Task
+  - ps: Invoke-Build -Task Build
 
 artifacts:
   - path: artifacts/ConfigMgr

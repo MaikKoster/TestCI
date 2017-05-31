@@ -52,7 +52,7 @@ task LoadRequiredModules {
     $RequiredModules | Foreach {
         if ($null -eq (get-module $_ -ListAvailable)) {
             Write-Host -NoNewLine "      Installing $($_) Module"
-            $null = Install-Module $_
+            $null = Install-Module $_ -Force
             Write-Host -ForegroundColor Green '...Installed!'
         }
         if (get-module $_ -ListAvailable) {
