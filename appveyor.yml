@@ -42,9 +42,11 @@ init:
 build_script:
   - ps: Invoke-Build -Task Build
 
+after_build:
+  - 7z a ConfigMgr.zip %APPVEYOR_BUILD_FOLDER%\artifacts\ConfigMgr
+
 artifacts:
   - path: ConfigMgr.zip
-    name: ConfigMgr
 
 on_success:
   - git checkout master
@@ -52,14 +54,13 @@ on_success:
   - git status
   - git commit -s -m "Update version to (new)"
   - git push origin master
-  - 7z a ConfigMgr.zip %APPVEYOR_BUILD_FOLDER%\artifacts\ConfigMgr
 
 deploy:
   release: v$(appveyor_build_version)
   description: 'Release description'
   provider: GitHub
   auth_token:
-    secure: sF4El1RbRQ5kkI1+K5sv9AZlwkaJE9OeOyUnTBwtVyNeo7krRP0V1C607Tal3sUQ>
+    secure: sF4El1RbRQ5kkI1+K5sv9AZlwkaJE9OeOyUnTBwtVyNeo7krRP0V1C607Tal3sUQ
   artifact: ConfigMgr.zip
   draft: true
   prerelease: false
