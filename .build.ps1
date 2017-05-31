@@ -401,12 +401,16 @@ task RunTests {
 
     if ($Env:APPVEYOR) {
         $wc = New-Object 'System.Net.WebClient'
-        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path(Join-Path $Artifacts "TestResults.xml")))
+        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path(Join-Path $ScratchPath "TestResults.xml")))
     }
+
+    Write-Host -NoNewLine '      Running Tests'
+    Write-Host -ForegroundColor Green '...Complete!'
 }
 
 # Synopsis: Throws and error if any tests do not pass for CI usage
 task ConfirmTestsPassed -After RunTests {
+    Write-Host -NoNewLine '      Confirming Test results'
     # Fail Build after reports are created, this allows CI to publish test results before failing
     [xml] $xml = Get-Content (Join-Path -Path $ScratchPath -ChildPath "TestResults.xml")
     $numberFails = $xml."test-results".failures
@@ -416,6 +420,8 @@ task ConfirmTestsPassed -After RunTests {
     $json = Get-Content (Join-Path -Path $ScratchPath -ChildPath "PesterResults.json") -Raw | ConvertFrom-Json
     $overallCoverage = [Math]::Floor(($json.CodeCoverage.NumberOfCommandsExecuted / $json.CodeCoverage.NumberOfCommandsAnalyzed) * 100)
     assert($OverallCoverage -gt $PercentCompliance) ('A Code Coverage of "{0}" does not meet the build requirement of "{1}"' -f $overallCoverage, $PercentCompliance)
+
+    Write-Host -ForegroundColor Green '...Complete!'
 }
 
 # Synopsis: Build help files for module
@@ -464,7 +470,7 @@ task CreateMarkdownHelp GetPublicFunctions, {
         Write-Host ''
         $MissingDocumentation | Select FileName,Matches | ft -auto
         Write-Host -ForegroundColor Yellow ''
-        pause
+        #pause
 
        # throw 'Missing documentation. Please review and rebuild.'
     }
