@@ -67,6 +67,6 @@ deploy:
   artifact: ConfigMgr.zip
   draft: true
   prerelease: false
-  force_update: true
+  #force_update: true
   on:
     branch: master                 # release from master branch only
