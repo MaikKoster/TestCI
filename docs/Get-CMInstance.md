@@ -5,7 +5,6 @@ schema: 2.0.0
 ---
 
 # Get-CMInstance
-
 ## SYNOPSIS
 Returns a ConfigMgr object.
 
@@ -47,7 +46,7 @@ Aliases: Class
 
 Required: True
 Position: 1
-Default value: None
+Default value: 
 Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
@@ -63,7 +62,7 @@ Aliases:
 
 Required: False
 Position: 2
-Default value: None
+Default value: 
 Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```

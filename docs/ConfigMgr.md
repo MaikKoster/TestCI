@@ -1,45 +1,43 @@
 ---
 Module Name: ConfigMgr
 Module Guid: 9ad632f2-7a0e-48a3-8d62-3b44c063e0f4
-Download Help Link: https://github.com/MaikKoster/TestCI/release/ConfigMgr/docs/ConfigMgr.md
-Help Version: 0.1.37
+Download Help Link: https://github.com/MaikKoster/docs/ConfigMgr.md
+Help Version: {{Please enter version of help manually (X.X.X.X) format}}
 Locale: en-US
 ---
 
 # ConfigMgr Module
 ## Description
-The ConfigMgr PowerShell module is used to directly access the ConfigMgr WMI provider.
+{{Manually Enter Description Here}}
 
 ## ConfigMgr Cmdlets
 ### [Get-CMInstance](Get-CMInstance.md)
-Returns a ConfigMgr object.
+{{Manually Enter Get-CMInstance Description Here}}
 
 ### [Get-CMPackage](Get-CMPackage.md)
-Gets a ConfigMgr package.
+{{Manually Enter Get-CMPackage Description Here}}
 
 ### [Get-CMUserDeviceAffinity](Get-CMUserDeviceAffinity.md)
-Gets user device affinities
+{{Manually Enter Get-CMUserDeviceAffinity Description Here}}
 
 ### [Invoke-CMMethod](Invoke-CMMethod.md)
-Invokes a ConfigMgr provider method.
+{{Manually Enter Invoke-CMMethod Description Here}}
 
 ### [New-CMConnection](New-CMConnection.md)
-Creates a new ConfigMgr connection.
+{{Manually Enter New-CMConnection Description Here}}
 
 ### [New-CMInstance](New-CMInstance.md)
-Creates a new ConfigMgr object.
+{{Manually Enter New-CMInstance Description Here}}
 
 ### [New-CMUserDeviceAffinity](New-CMUserDeviceAffinity.md)
-Creates a new User device affinity
+{{Manually Enter New-CMUserDeviceAffinity Description Here}}
 
 ### [Remove-CMInstance](Remove-CMInstance.md)
-Removes a ConfigMgr object.
+{{Manually Enter Remove-CMInstance Description Here}}
 
 ### [Set-CMInstance](Set-CMInstance.md)
-Updates a ConfigMgr object.
+{{Manually Enter Set-CMInstance Description Here}}
 
 ### [Write-Log](Write-Log.md)
-Write-Log writes a message to a specified log file with the current time stamp.
-
-
+{{Manually Enter Write-Log Description Here}}
 

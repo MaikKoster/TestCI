@@ -2,7 +2,7 @@
 function Write-Log {
     <#
     .SYNOPSIS
-        Write-Log writes a message to a specified log file with the current time stamp.
+        Write-Log writes a message to a specified log file with the current time stamp. Test
 
     .DESCRIPTION
         The Write-Log function is designed to add logging capability to other scripts.
@@ -20,6 +20,8 @@ function Write-Log {
     .EXAMPLE
         Write-Log -Message 'Folder does not exist.' -Path c:\Logs\Script.log -Level Error
         Writes the message to the specified log file as an error message, and writes the message to the error pipeline.
+    .NOTES
+        Let's add some notes
     #>
     [CmdletBinding()]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
