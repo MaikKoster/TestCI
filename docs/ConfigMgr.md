@@ -2,7 +2,7 @@
 Module Name: ConfigMgr
 Module Guid: 9ad632f2-7a0e-48a3-8d62-3b44c063e0f4
 Download Help Link: https://github.com/MaikKoster/TestCI/release/ConfigMgr/docs/ConfigMgr.md
-Help Version: 0.1.28
+Help Version: 0.1.29
 Locale: en-US
 ---
 
