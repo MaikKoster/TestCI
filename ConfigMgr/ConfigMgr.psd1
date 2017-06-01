@@ -1,7 +1,7 @@
 @{
 
     RootModule = 'ConfigMgr.psm1'
-    ModuleVersion = '0.1.35'
+    ModuleVersion = '0.1.36'
     GUID = '9ad632f2-7a0e-48a3-8d62-3b44c063e0f4'
     Author = 'Maik Koster'
     CompanyName = 'Maik Koster'
