@@ -5,7 +5,6 @@ schema: 2.0.0
 ---
 
 # Remove-CMInstance
-
 ## SYNOPSIS
 Removes a ConfigMgr object.
 
@@ -54,7 +53,7 @@ Aliases:
 
 Required: True
 Position: Named
-Default value: None
+Default value: 
 Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
@@ -69,7 +68,7 @@ Aliases:
 
 Required: True
 Position: Named
-Default value: None
+Default value: 
 Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
@@ -84,14 +83,13 @@ Aliases: ClassInstance
 
 Required: True
 Position: Named
-Default value: None
+Default value: 
 Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
 ### -WhatIf
-Shows what would happen if the cmdlet runs.
-The cmdlet is not run.
+{{Fill WhatIf Description}}
 
 ```yaml
 Type: SwitchParameter
@@ -100,13 +98,13 @@ Aliases: wi
 
 Required: False
 Position: Named
-Default value: None
+Default value: 
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -Confirm
-Prompts you for confirmation before running the cmdlet.
+{{Fill Confirm Description}}
 
 ```yaml
 Type: SwitchParameter
@@ -115,7 +113,7 @@ Aliases: cf
 
 Required: False
 Position: Named
-Default value: None
+Default value: 
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

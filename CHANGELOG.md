@@ -50,7 +50,7 @@
 ### Added
 -
 
-## 0.0.10
+## 0.1.36
 ### YYYY-MM-DD
 
 Initial release with the following features:

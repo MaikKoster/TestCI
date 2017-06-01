@@ -5,7 +5,6 @@ schema: 2.0.0
 ---
 
 # New-CMConnection
-
 ## SYNOPSIS
 Creates a new ConfigMgr connection.
 
@@ -54,7 +53,7 @@ Aliases:
 
 Required: False
 Position: 2
-Default value: None
+Default value: 
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
