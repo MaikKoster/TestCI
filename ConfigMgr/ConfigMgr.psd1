@@ -29,12 +29,6 @@
 # Aliases to export from this module
 # AliasesToExport = @()
 
-# List of all modules packaged with this module
-# ModuleList = @()
-
-# List of all files packaged with this module
-# FileList = @()
-
 # Private data to pass to the module specified in RootModule/ModuleToProcess
 # PrivateData = ''
 PrivateData = @{

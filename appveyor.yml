@@ -19,6 +19,8 @@ branches:
   only:
   - master
 
+skip_non_tags: true
+
 environment:
   GitHubKey:
     secure: sF4El1RbRQ5kkI1+K5sv9AZlwkaJE9OeOyUnTBwtVyNeo7krRP0V1C607Tal3sUQ
