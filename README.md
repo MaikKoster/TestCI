@@ -30,7 +30,6 @@ See the [PowerShell Gallery](http://www.powershellgallery.com/packages/ConfigMgr
 
 Download [ConfigMgr.zip](https://github.com/MaikKoster/TestCI/releases/download/v0.1.37/ConfigMgr-0.1.37.zip) and extract the contents into `C:\Users\[User]\Documents\WindowsPowerShell\modules\ConfigMgr` (you may have to create these directories if they don't exist.)
 
-
 ## Contributors
 * [MaikKoster](https://github.com/MaikKoster)
 
