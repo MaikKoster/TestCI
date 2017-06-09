@@ -24,8 +24,14 @@ branches:
 environment:
   GitHubKey:
     secure: sF4El1RbRQ5kkI1+K5sv9AZlwkaJE9OeOyUnTBwtVyNeo7krRP0V1C607Tal3sUQ
-  NuGetKey:
+  PSGalleryKey:
     secure: JIP/CzuBZTaDq9NS7FAzcAjZVq0kWfM1+KVMDm3IvbIFDdD1RX0MHShhYpohD3Iv
+  MyGetKey:
+    secure: +zNd+M9Zr3ExXd1c8HWy5+1VTRY47TojC68Z7ohSu5DRHVQ1otFoc5lm6VULA6l2
+  AppVeyorKey:
+    secure: Fc+eB7vimbVerpEWtHarUSC0fM5e1zTOBxJ7Rwwxqdc=
+  CoverallKey:
+    secure: tjqW59/qfyOwNQ5m62zQjD9JtRgff+epYzwwwnCCquQwKWAT3d+TFIiIeVY18rMa
 
 # Allow WMF5 (i.e. PowerShellGallery functionality)
 os: WMF 5

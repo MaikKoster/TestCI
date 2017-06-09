@@ -2,7 +2,7 @@
 function Write-Log {
     <#
     .SYNOPSIS
-        Write-Log writes a message to a specified log file with the current time stamp. Test
+        Write-Log writes a message to a specified log file with the current time stamp.
 
     .DESCRIPTION
         The Write-Log function is designed to add logging capability to other scripts.

@@ -5,6 +5,7 @@ schema: 2.0.0
 ---
 
 # Get-CMPackage
+
 ## SYNOPSIS
 Gets a ConfigMgr package.
 
@@ -52,7 +53,7 @@ Aliases: PackageID
 
 Required: True
 Position: Named
-Default value: 
+Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
@@ -68,7 +69,7 @@ Aliases: PackageName
 
 Required: True
 Position: Named
-Default value: 
+Default value: None
 Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
@@ -98,7 +99,7 @@ Aliases: FolderID, Folder
 
 Required: False
 Position: Named
-Default value: 
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -113,7 +114,7 @@ Aliases:
 
 Required: True
 Position: Named
-Default value: 
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -128,7 +129,7 @@ Aliases: PackageType
 
 Required: True
 Position: Named
-Default value: 
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -143,7 +144,7 @@ Aliases:
 
 Required: True
 Position: Named
-Default value: 
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

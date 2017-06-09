@@ -5,9 +5,9 @@ schema: 2.0.0
 ---
 
 # Write-Log
+
 ## SYNOPSIS
 Write-Log writes a message to a specified log file with the current time stamp.
-Test
 
 ## SYNTAX
 
@@ -55,7 +55,7 @@ Aliases: LogContent
 
 Required: True
 Position: 1
-Default value: 
+Default value: None
 Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
@@ -73,7 +73,7 @@ Aliases: LogPath
 
 Required: False
 Position: 2
-Default value: 
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
