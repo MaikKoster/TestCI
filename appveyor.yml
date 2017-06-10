@@ -57,8 +57,8 @@ on_success:
 #  - git push origin master
 
 artifacts:
-  - path: artifacts/ConfigMgr-$(appveyor_build_version).zip
-  - name: ConfigMgr-$(appveyor_build_version).zip
+  - path: artifacts\ConfigMgr-$(appveyor_build_version).zip
+    name: ConfigMgr-$(appveyor_build_version).zip
 
 deploy:
   release: v$(appveyor_build_version)
