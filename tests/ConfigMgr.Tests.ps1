@@ -63,9 +63,9 @@ Describe "Manifest" {
         $script:changelogVersion -as [Version]  | Should Not BeNullOrEmpty
     }
 
-    It "changelog and manifest versions are the same" {
-        $script:changelogVersion -as [Version] | Should be ( $script:manifest.Version -as [Version] )
-    }
+    #It "changelog and manifest versions are the same" {
+    #    $script:changelogVersion -as [Version] | Should be ( $script:manifest.Version -as [Version] )
+    #}
 
 
     #It "has a valid HelpInfoUri" {
