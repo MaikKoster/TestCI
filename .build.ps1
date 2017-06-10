@@ -791,7 +791,8 @@ task Build `
         RunTests,
         PrepareStage,
         CreateModulePSM1,
-        PublishArtifacts,
+        PrepareArtifacts,
+        GithubPush,
         BuildSessionCleanup
 
 # Synopsis: Build module without combining source files
@@ -801,4 +802,4 @@ task BuildWithoutCombiningSource `
         RunTests,
         PrepareStage,
         CopyModulePSM1,
-        PublishArtifacts
+        PrepareArtifacts
