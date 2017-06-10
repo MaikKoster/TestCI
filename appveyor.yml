@@ -46,7 +46,7 @@ init:
       Install-Module InvokeBuild -Force
 
 build_script:
-  - ps: Invoke-Build -Task Build
+  - ps: Invoke-Build -Task Build -Verbose
 
 on_success:
 #  - git checkout master
