@@ -240,7 +240,7 @@ task UpdateReadMe {
     if (Test-Path ($ReadMePath)) {
         $ReadMe = Get-Content -Path $ReadMePath -Raw
 
-        $NewDownloadLink = "$ModuleWebsite/releases/download/v$Script:Version/$ModuleToBuild.zip"
+        $NewDownloadLink = "$ModuleWebsite/releases/download/v$Script:Version/$ModuleToBuild-$Script:Version.zip"
 
         $ReadMe -replace "$ModuleWebsite.+$ModuleToBuild.zip", $NewDownloadLink | Set-Content -Path $ReadMePath -Force -Encoding UTF8
 
