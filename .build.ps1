@@ -756,7 +756,6 @@ task PrepareArtifacts Version, {
         #     if (Test-Path -Path "$ScratchPath\PesterResults.json") {
         #         Push-AppveyorArtifact "$ScratchPath\PesterResults.json"
         #     }
-
         #     Write-Host -NoNewLine "      Publishing artificats to AppVeyor"
         #     Write-Host -ForeGroundColor green '...Complete!'
         # }
