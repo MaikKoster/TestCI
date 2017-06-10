@@ -1,4 +1,9 @@
 ﻿[![Build status](https://ci.appveyor.com/api/projects/status/sn9cxw8h026yfpb4/branch/master?svg=true)](https://ci.appveyor.com/project/MKoster/testci/branch/master)
+[![Code Coverage Status](https://coveralls.io/repos/github/MaikKoster/TestCI/badge.svg?branch=Master)](https://coveralls.io/github/MaikKoster/TestCI?branch=Master)
+
+[![Build status](https://ci.appveyor.com/api/projects/status/sn9cxw8h026yfpb4/branch/master?svg=true)](https://ci.appveyor.com/project/MKoster/testci/branch/develop)
+[![Code Coverage Status](https://coveralls.io/repos/github/MaikKoster/TestCI/badge.svg?branch=Master)](https://coveralls.io/github/MaikKoster/TestCI?branch=develop)
+
 [![PS Gallery](https://img.shields.io/badge/install-PS%20Gallery-blue.svg)](https://www.powershellgallery.com/packages/ConfigMgr)
 
 
@@ -36,6 +41,11 @@ Download [ConfigMgr.zip](https://github.com/MaikKoster/TestCI/releases/download/
 
 * Twitter: [@Maik_Koster](https://twitter.com/Maik_Koster)
 * Blog: [MaikKoster.com](http://MaikKoster.com/)
+
+
+
+
+
 
 
 

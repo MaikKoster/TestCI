@@ -15,9 +15,7 @@ skip_commits:
 pull_requests:
   do_not_increment_build_number: true
 
-branches:
-  only:
-  - master
+skip_tags: true
 
 #skip_non_tags: true
 
@@ -31,7 +29,7 @@ environment:
   AppVeyorKey:
     secure: Fc+eB7vimbVerpEWtHarUSC0fM5e1zTOBxJ7Rwwxqdc=
   CoverallKey:
-    secure: tjqW59/qfyOwNQ5m62zQjD9JtRgff+epYzwwwnCCquQwKWAT3d+TFIiIeVY18rMa
+    secure: B6WYS2545rt4xY3DvP9Wy8tHKwP/JPckyvTZ5vpCj451oeD06iL+th4wNQgpntbg
 
 # Allow WMF5 (i.e. PowerShellGallery functionality)
 os: WMF 5
@@ -50,19 +48,13 @@ init:
 build_script:
   - ps: Invoke-Build -Task Build
 
-after_build:
-  - 7z a ConfigMgr.zip %APPVEYOR_BUILD_FOLDER%\artifacts\ConfigMgr
-
-artifacts:
-  - path: ConfigMgr.zip
-
 on_success:
-  - git checkout master
-  - git add --all
-  - git reset -- ConfigMgr.zip
-  - git status
-  - git commit -s -m "Update version to %APPVEYOR_BUILD_VERSION%"
-  - git push origin master
+#  - git checkout master
+#  - git add --all
+#  - git reset -- ConfigMgr.zip
+#  - git status
+#  - git commit -s -m "Update version to %APPVEYOR_BUILD_VERSION%"
+#  - git push origin master
 
 deploy:
   release: v$(appveyor_build_version)
@@ -70,9 +62,9 @@ deploy:
   provider: GitHub
   auth_token:
     secure: sF4El1RbRQ5kkI1+K5sv9AZlwkaJE9OeOyUnTBwtVyNeo7krRP0V1C607Tal3sUQ
-  artifact: ConfigMgr.zip
+  artifact: ConfigMgr-$(appveyor_build_version).zip
   draft: true
   prerelease: false
-  #force_update: true
+  force_update: true
   on:
     branch: master                 # release from master branch only

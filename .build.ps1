@@ -25,7 +25,7 @@ $StageReleasePath = Join-Path -Path $ScratchPath -ChildPath $ModuleToBuild   # J
 $BuildToolPath = Join-Path -Path $ScriptRoot -ChildPath $BuildToolFolder
 
 # These are required for a full build process and will be automatically installed if they aren't available
-$RequiredModules = @('BuildHelpers', 'Posh-Git', 'PlatyPS', 'PSScriptAnalyzer', 'Pester', 'Coveralls')
+$RequiredModules = @('BuildHelpers', 'PlatyPS', 'PSScriptAnalyzer', 'Pester', 'Coveralls')
 
 # Used later to determine if we are in a configured state or not
 $IsConfigured = $False
@@ -445,20 +445,17 @@ task RunTests {
         Write-Host -ForegroundColor Green '...Complete!'
 
         $CurrentBranch = $Env:APPVEYOR_REPO_BRANCH
-    } else {
-        $CurrentBranch = Get-GitBranch
+
+        # Upload Code Coverage to Coverall
+        if (-not([string]::IsNullOrEmpty($Env:CoverallKey))) {
+            Write-Host "Coverage"
+            $Coverage = Format-Coverage -PesterResults $testResults -CoverallsApiToken "$Env:CoverallKey"  -BranchName $CurrentBranch -Verbose
+            Publish-Coverage $Coverage -Verbose
+
+            Write-Host -NoNewLine '      Uploading CodeCoverage to Coverall'
+            Write-Host -ForegroundColor Green '...Complete!'
+        }
     }
-
-    # Upload Code Coverage to Coverall
-    if (-not([string]::IsNullOrEmpty($Env:CoverallKey))) {
-        Write-Host "Coverage"
-        $Coverage = Format-Coverage -PesterResults $testResults -CoverallsApiToken "$Env:CoverallKey"  -BranchName $CurrentBranch -Verbose
-        Publish-Coverage $Coverage -Verbose
-
-        Write-Host -NoNewLine '      Uploading CodeCoverage to Coverall'
-        Write-Host -ForegroundColor Green '...Complete!'
-    }
-
 }
 
 # Synopsis: Throws an error if any tests do not pass for CI usage
@@ -601,7 +598,7 @@ task CreateUpdateableHelpCAB {
 # }
 
 # Synopsis: Push with a version tag.
-task GitPushRelease Version, {
+task GitHubPushRelease Version, {
 	#$changes = exec { git status --short }
 	#assert (-not $changes) "Please, commit changes."
 
@@ -609,7 +606,7 @@ task GitPushRelease Version, {
 	#exec { git tag -a "v$($Script:Version)" -m "v$($Script:Version)" }
 	#exec { git push origin "v$($Script:Version)" }
 
-    if ($ENV:APPVEYOR_REPO_BRANCH -eq 'master' -and [string]::IsNullOrWhiteSpace($ENV:APPVEYOR_PULL_REQUEST_NUMBER)) {
+    #if ($ENV:APPVEYOR_REPO_BRANCH -eq 'master' -and [string]::IsNullOrWhiteSpace($ENV:APPVEYOR_PULL_REQUEST_NUMBER)) {
         #Create GitHub release
         Write-Host 'Starting GitHub release'
         $releaseData = @{
@@ -622,7 +619,7 @@ task GitPushRelease Version, {
 
         $auth = 'Basic ' + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes($env:GitHubKey + ':x-oauth-basic'))
         $releaseParams = @{
-            Uri         = "$ModModuleWebsite/releases"
+            Uri         = "$ModuleWebsite/releases"
             Method      = 'POST'
             Headers     = @{
                 Authorization = $auth
@@ -643,13 +640,13 @@ task GitPushRelease Version, {
                 Authorization = $auth
             }
             ContentType = 'application/zip'
-            InFile      = "$ScrathPath\$ModuleToBuild-$Script:Version.zip"
+            InFile      = "$ScratchPath\$ModuleToBuild-$Script:Version.zip"
         }
 
         $result = Invoke-RestMethod @uploadParams
         Write-Host -NoNewLine "      Creating GitHub release"
         Write-Host -ForeGroundColor green '...Complete!'
-      }
+    #}
 }
 
 # Synopsis: Commit changes and push to github
