@@ -197,10 +197,20 @@ task Version LoadModuleManifest, {
             $Script:Version = "$($buildVersion.MajorVersion).$($buildVersion.MinorVersion).0"
         } elseif ($lastBuildVersion.buildVersion -ne ($buildNumber + 1)) {
             # Change Build version if it got incremented on a failed build
+            $build = @{
+                nextBuildNumber = ($lastBuildVersion.buildVersion + 2)
+            }
+            $json = $build | ConvertTo-Json
+
+            Invoke-RestMethod -Method Put "$apiUrl/projects/$accountName/$projectSlug/settings/build-number" -Body $json -Headers $headers
+
             $Script:Version = "$($buildVersion.MajorVersion).$($buildVersion.MinorVersion).$($lastBuildVersion.buildVersion + 1)"
         } else {
             $Script:Version = $buildVersionText
         }
+
+        # Update AppVeyor environment
+        $env:APPVEYOR_BUILD_VERSION = $Script:Version
     } else {
         # Get current version from manifest file
         $Script:Version = $Script:Manifest.ModuleVersion
@@ -730,26 +740,26 @@ task GetReleaseNotes Version, {
     Write-Host -ForeGroundColor green '...Complete!'
 }
 
-# Synopsis: Publish artifacts in AppVeyor for later usage
-task PublishArtifacts Version, {
+# Synopsis: Prepare artifacts for AppVeyor
+task PrepareArtifacts Version, {
     # Compress current Release
     $ZippedReleasePath = Join-Path -Path $ScratchPath -ChildPath "$ModuleToBuild-$Script:Version.zip"
 
     if (Test-Path -Path $CurrentReleasePath) {
         Compress-Archive -Path $CurrentReleasePath -DestinationPath $ZippedReleasePath
 
-        if ($Env:APPVEYOR) {
-            Push-AppveyorArtifact $ZippedReleasePath -File (Split-Path -Path $ZippedReleasePath -Leaf )
-            if (Test-Path -Path "$ScratchPath\ScriptAnalyzer.json") {
-                Push-AppveyorArtifact "$ScratchPath\ScriptAnalyzer.json"
-            }
-            if (Test-Path -Path "$ScratchPath\PesterResults.json") {
-                Push-AppveyorArtifact "$ScratchPath\PesterResults.json"
-            }
+        # if ($Env:APPVEYOR) {
+        #     Push-AppveyorArtifact $ZippedReleasePath -File (Split-Path -Path $ZippedReleasePath -Leaf )
+        #     if (Test-Path -Path "$ScratchPath\ScriptAnalyzer.json") {
+        #         Push-AppveyorArtifact "$ScratchPath\ScriptAnalyzer.json"
+        #     }
+        #     if (Test-Path -Path "$ScratchPath\PesterResults.json") {
+        #         Push-AppveyorArtifact "$ScratchPath\PesterResults.json"
+        #     }
 
-            Write-Host -NoNewLine "      Publishing artificats to AppVeyor"
-            Write-Host -ForeGroundColor green '...Complete!'
-        }
+        #     Write-Host -NoNewLine "      Publishing artificats to AppVeyor"
+        #     Write-Host -ForeGroundColor green '...Complete!'
+        # }
     }
 }
 

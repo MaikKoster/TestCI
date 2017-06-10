@@ -56,6 +56,10 @@ on_success:
 #  - git commit -s -m "Update version to %APPVEYOR_BUILD_VERSION%"
 #  - git push origin master
 
+artifacts:
+  - path: artifacts/ConfigMgr-$(appveyor_build_version).zip
+  - name: ConfigMgr-$(appveyor_build_version).zip
+
 deploy:
   release: v$(appveyor_build_version)
   description: 'Release description'
