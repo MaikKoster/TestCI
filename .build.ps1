@@ -661,14 +661,20 @@ task GitHubPushRelease Version, {
 
 # Synopsis: Commit changes and push to github
 task GithubPush GetReleaseNotes, {
+    Write-Host "      git checkout master"
     exec { git checkout master }
+    Write-Host "      git add -all"
     exec { git add --all }
+    Write-Host "      git status"
     exec { git status }
     if (-not([string]::IsNullOrEmpty($Script:ReleaseNotes))) {
+        Write-Host "      git commit -s -m ""$Script:ReleaseNotes"""
         exec { git commit -s -m "$Script:ReleaseNotes"}
     } else {
+        Write-Host "      git commit -s -m ""v$($Script:Version)"""
         exec { git commit -s -m "v$($Script:Version)"}
     }
+    Write-Host "      git checkout master"
     exec { git push origin master }
 	$changes = exec { git status --short }
 	assert (-not $changes) "Please, commit changes."
