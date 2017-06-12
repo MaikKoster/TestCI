@@ -28,7 +28,7 @@ See the [PowerShell Gallery](http://www.powershellgallery.com/packages/ConfigMgr
 
 ### Manual Install
 
-Download [ConfigMgr.zip](https://github.com/MaikKoster/TestCI/releases/download/v0.1.35/ConfigMgr.zip) and extract the contents into `C:\Users\[User]\Documents\WindowsPowerShell\modules\ConfigMgr` (you may have to create these directories if they don't exist.)
+Download [ConfigMgr.zip](https://github.com/MaikKoster/TestCI/releases/download/v0.1.37/ConfigMgr-0.1.37.zip) and extract the contents into `C:\Users\[User]\Documents\WindowsPowerShell\modules\ConfigMgr` (you may have to create these directories if they don't exist.)
 
 
 ## Contributors
@@ -41,6 +41,7 @@ Download [ConfigMgr.zip](https://github.com/MaikKoster/TestCI/releases/download/
 
 * Twitter: [@Maik_Koster](https://twitter.com/Maik_Koster)
 * Blog: [MaikKoster.com](http://MaikKoster.com/)
+
 
 
 

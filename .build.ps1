@@ -576,7 +576,7 @@ task GitHubPush Version, UpdateReadMe, {
 
 # Synopsis: Push with a version tag.
 # Updates ReadMe before
-task GitHubPushRelease Version, UpdateReadMe,  {
+task GitHubPushRelease Version, UpdateReadMe, GitHubPush,  {
 	#$changes = exec { git status --short }
 	#assert (-not $changes) "Please, commit changes."
 
@@ -588,9 +588,10 @@ task GitHubPushRelease Version, UpdateReadMe,  {
         #Create GitHub release
         Write-Host 'Starting GitHub release'
         $releaseData = @{
-            tag_name         = "v$ENV:APPVEYOR_BUILD_VERSION"
+            tag_name         = "v$Version"
             target_commitish = 'master'
-            name             = "v$ENV:APPVEYOR_BUILD_VERSION"
+            name             = "v$Version"
+            Body             = $ReleaseNotes
             draft            = $true
             prerelease       = $false
         }
@@ -606,10 +607,12 @@ task GitHubPushRelease Version, UpdateReadMe,  {
             Body        = (ConvertTo-Json -InputObject $releaseData -Compress)
         }
 
+        $ZippedReleasePath = Join-Path -Path $ScratchPath -ChildPath "$ModuleToBuild-$Version.zip"
+
         $result = Invoke-RestMethod @releaseParams
         $uploadUri = $result | Select-Object -ExpandProperty upload_url
-        $uploadUri = $uploadUri -creplace '\{\?name,label\}'  #, '?name=coveralls.zip'
-        $uploadUri = $uploadUri + "?name=$ModuleToBuild-$Script:Version.zip"
+        $uploadUri = $uploadUri -replace '\{\?name,label\}', "?name=$ModuleToBuild-$Version.zip"
+        #$uploadUri = $uploadUri + "?name=$ModuleToBuild-$Script:Version.zip"
 
         $uploadParams = @{
             Uri         = $uploadUri
@@ -618,7 +621,7 @@ task GitHubPushRelease Version, UpdateReadMe,  {
                 Authorization = $auth
             }
             ContentType = 'application/zip'
-            InFile      = "$ScratchPath\$ModuleToBuild-$Script:Version.zip"
+            InFile      = "$ZippedReleasePath"
         }
 
         $result = Invoke-RestMethod @uploadParams
@@ -780,6 +783,16 @@ task BuildAndPush `
         CreateModulePSM1,
         PrepareArtifacts,
         GitHubPush,
+        BuildSessionCleanup
+
+task BuildAndRelease `
+        Configure,
+        CreateHelp,
+        RunTests,
+        PrepareStage,
+        CreateModulePSM1,
+        PrepareArtifacts,
+        GitHubPushRelease,
         BuildSessionCleanup
 
 # Synopsis: Build module without combining source files
