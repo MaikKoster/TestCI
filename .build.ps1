@@ -1,5 +1,5 @@
 ﻿param (
-	[string]$ReleaseNotes = $null
+	[string]$Configuration = 'Debug'
 )
 
 if (Test-Path '.\build\.buildenvironment.ps1') {
@@ -8,8 +8,14 @@ if (Test-Path '.\build\.buildenvironment.ps1') {
     Write-Error "Without a build environment file we are at a loss as to what to do!"
 }
 
-# You really shouldn't change this for a powershell module (if you want it to publish to the psgallery correctly)
-#$CurrentReleaseFolder = $ModuleToBuild
+# Build can be initiated locally or from CI.
+# Update to adjust to CI system
+If ($Env:APPVEYOR) {
+
+} else {
+
+}
+
 
 # Put together our full paths. Generally leave these alone
 $ScriptRoot = (Resolve-Path -Path ".\").Path
@@ -25,7 +31,7 @@ $StageReleasePath = Join-Path -Path $ScratchPath -ChildPath $ModuleToBuild   # J
 $BuildToolPath = Join-Path -Path $ScriptRoot -ChildPath $BuildToolFolder
 
 # These are required for a full build process and will be automatically installed if they aren't available
-$RequiredModules = @('BuildHelpers', 'PlatyPS', 'PSScriptAnalyzer', 'Pester', 'Coveralls')
+$RequiredModules = @('BuildHelpers', 'Posh-Git', 'PlatyPS', 'PSScriptAnalyzer', 'Pester', 'Coveralls')
 
 # Used later to determine if we are in a configured state or not
 $IsConfigured = $False
@@ -74,7 +80,7 @@ task LoadBuildTools {
 
 # Synopsis: Import the current module manifest file for processing
 task LoadModuleManifest {
-    assert (test-path $ModuleManifestFullPath) "Unable to locate the module manifest file: $ModuleManifestFullPath"
+    assert (Test-Path $ModuleManifestFullPath) "Unable to locate the module manifest file: $ModuleManifestFullPath"
 
     Write-Host -NoNewLine '      Loading the existing module manifest for this module'
     $Script:Manifest = Import-PowerShellDataFile -Path $ModuleManifestFullPath
@@ -152,95 +158,53 @@ task LoadModule {
     }
 }
 
-# Synopsis: Update current module manifest with the version
+# Synopsis: Identify current Module Version.
+# Also generate appropriate "Build-Version" if running in CI
 task Version LoadModuleManifest, {
-    # Major/Minor changes are handled manually by updating the appveyor.yml file
-    # Build version changes are enforced by CI system (AppVeyor)
-    # Build version will only increment on successfull builds
-    # Build version will be reset to 0 on major/minor change
+    # Module Version follows SemVer convention (http://semver.org/)
+    # SPOT for Module Version is the .psd1 file
+    # All changes to the Module Version are handled manually!
+    # BuildNumber from CI is appended to the CI Build-Version. However has no relevance for any public release
+
+    $CurrentVersion = $Manifest.ModuleVersion
 
     if ($Env:APPVEYOR) {
-        # Prepare REST call
-        $apiUrl = 'https://ci.appveyor.com/api'
-        $token = "$Env:AppVeyorKey"
-        $headers = @{
-            "Authorization" = "Bearer $token"
-            "Content-type" = "application/json"
-            "Accept" = "application/json"
-        }
-        $accountName = $env:APPVEYOR_ACCOUNT_NAME
-        $projectSlug = $env:APPVEYOR_PROJECT_SLUG
-        $buildNumber = $env:APPVEYOR_BUILD_NUMBER
-        $buildVersionText = $env:APPVEYOR_BUILD_VERSION
-        $buildVersion = New-Object -TypeName PSObject -Property (@{
-            'MajorVersion'=$buildVersionText.Split('.')[0];
-            'MinorVersion'=$buildVersionText.Split('.')[1];
-            'BuildVersion'=$buildVersionText.Split('.')[2]
-        })
-
-        # Get list of builds
-        $response = Invoke-RestMethod -Method Get -Uri "$apiUrl/projects/$accountName/$projectSlug/history?recordsNumber=100" -Headers $headers
-
-        # Get last successfull(!) build version
-        $lastBuildVersion = $response.builds | Where-Object {$_.status -eq "success"} | Select-Object -First 1 @{Label="MajorVersion"; Expression={$_.version.Split('.')[0]}}, @{Label="MinorVersion"; Expression={$_.version.Split('.')[1]}}, @{Label="BuildVersion"; Expression={$_.version.Split('.')[2]}}
-
-        if ($lastBuildVersion.MajorVersion -ne $buildVersion.MajorVersion -or (($lastBuildVersion.MajorVersion -eq $buildVersion.MajorVersion) -and ($lastBuildVersion.MinorVersion -ne $buildVersion.MinorVersion))) {
-            # Reset Buildversion on Major/Minor change
-            $build = @{
-                nextBuildNumber = 0
-            }
-            $json = $build | ConvertTo-Json
-
-            Invoke-RestMethod -Method Put "$apiUrl/projects/$accountName/$projectSlug/settings/build-number" -Body $json -Headers $headers
-
-            # Update current version
-            $Script:Version = "$($buildVersion.MajorVersion).$($buildVersion.MinorVersion).0"
-        } elseif ($lastBuildVersion.buildVersion -ne ($buildNumber + 1)) {
-            # Change Build version if it got incremented on a failed build
-            $build = @{
-                nextBuildNumber = ($lastBuildVersion.buildVersion + 2)
-            }
-            $json = $build | ConvertTo-Json
-
-            Invoke-RestMethod -Method Put "$apiUrl/projects/$accountName/$projectSlug/settings/build-number" -Body $json -Headers $headers
-
-            $Script:Version = "$($buildVersion.MajorVersion).$($buildVersion.MinorVersion).$($lastBuildVersion.buildVersion + 1)"
-        } else {
-            $Script:Version = $buildVersionText
-        }
-
-        # Update AppVeyor environment
-        $env:APPVEYOR_BUILD_VERSION = $Script:Version
+        $BuildVersion = "$($Version)+$($Env:APPVEYOR_BUILD_NUMBER)"
+        Write-Host "      Build Version: $BuildVersion"
+        Update-AppveyorBuild -Version "$BuildVersion"
     } else {
-        # Get current version from manifest file
-        $Script:Version = $Script:Manifest.ModuleVersion
+        # Update appveyor.yml file with current version
+        # TODO:
     }
 
+    $Script:Version = $CurrentVersion
+    Write-Host "      Version: $Version"
     # Beyond this step, $Script:Version should be the referenced version
-
-    Write-Host -NoNewline "      Updating Version"
+    Write-Host -NoNewline "      Validating Version"
     Write-Host -ForegroundColor Green '...Completed!'
 
-}, UpdateModuleManifest, UpdateReadMe
+}
 
 # Synopsis: Updates the Module manifest version
+# Module manifest is SPOT for version. Handle with care.
 task UpdateModuleManifest {
     # Update Modulemanifest
-    if ($Manifest.ModuleVersion -ne $Script:Version) {
-        Write-Host -NoNewline "      Attempting to update the module manifest version ($($Manifest.ModuleVersion)) to $(($Script:Version).ToString())"
-        Update-Metadata -Path $ModuleManifestFullPath -PropertyName ModuleVersion -Value $Script:Version
+    if ($Manifest.ModuleVersion -ne $Version) {
+        Write-Host -NoNewline "      Attempting to update the module manifest version ($($Manifest.ModuleVersion)) to $(($Version).ToString())"
+        Update-Metadata -Path $ModuleManifestFullPath -PropertyName ModuleVersion -Value $Version
         Write-Host -ForegroundColor Green '...Updated!'
     }
 }
 
 # Synposis. Updates the download link in the ReadMe file
+# Should only be called when a release is pushed
 task UpdateReadMe {
     $ReadMePath = Join-Path -Path $ScriptRoot -ChildPath "README.md"
     Write-Host $ReadMePath
     if (Test-Path ($ReadMePath)) {
         $ReadMe = Get-Content -Path $ReadMePath -Raw
 
-        $NewDownloadLink = "$ModuleWebsite/releases/download/v$Script:Version/$ModuleToBuild-$Script:Version.zip"
+        $NewDownloadLink = "$ModuleWebsite/releases/download/v$Version/$ModuleToBuild-$Version.zip"
 
         $ReadMe -replace "$ModuleWebsite.+$ModuleToBuild.zip", $NewDownloadLink | Set-Content -Path $ReadMePath -Force -Encoding UTF8
 
@@ -248,7 +212,6 @@ task UpdateReadMe {
         Write-Host -ForeGroundColor green '...Complete!'
     }
 }
-
 
 #Synopsis: Validate script requirements are met, load required modules, load project manifest and module, and load additional build tools.
 task Configure ValidateRequirements, LoadRequiredModules, LoadBuildTools, LoadModuleManifest, LoadModule, Version, Clean, {
@@ -515,7 +478,7 @@ task UpdateMarkdownHelp {
     # Replace each missing element we need for a proper generic module page .md file
     $ModulePage = Join-Path -Path $DocRoot -ChildPath "$ModuleToBuild.md"
     $ModulePageFileContent = Get-Content -Raw $ModulePage
-    $ModulePageFileContent = $ModulePageFileContent -replace '{{Manually Enter Description Here}}', $Script:Manifest.Description
+    $ModulePageFileContent = $ModulePageFileContent -replace '{{Manually Enter Description Here}}', $Manifest.Description
 
     # Function Description should have been updated by PlatyPS
     $ModulePageFileContent | Out-File $ModulePage -Force -Encoding:utf8
@@ -547,11 +510,11 @@ task CreateMarkdownHelp GetPublicFunctions, {
     $ModulePage = Join-Path -Path $DocRoot -ChildPath "$ModuleToBuild.md"
 
     # Create the .md files and the generic module page md as well
-    $null = New-MarkdownHelp -Module $ModuleToBuild -OutputFolder $DocRoot -Force -WithModulePage -Locale 'en-US' -FwLink $FwLink -HelpVersion $Script:Version
+    $null = New-MarkdownHelp -Module $ModuleToBuild -OutputFolder $DocRoot -Force -WithModulePage -Locale 'en-US' -FwLink $FwLink -HelpVersion $Version
 
     # Replace each missing element we need for a proper generic module page .md file
     $ModulePageFileContent = Get-Content -Raw $ModulePage
-    $ModulePageFileContent = $ModulePageFileContent -replace '{{Manually Enter Description Here}}', $Script:Manifest.Description
+    $ModulePageFileContent = $ModulePageFileContent -replace '{{Manually Enter Description Here}}', $Manifest.Description
     $Script:FunctionsToExport | Foreach-Object {
         Write-Host "      Updating definition for the following function: $($_)"
         $TextToReplace = "{{Manually Enter $($_) Description Here}}"
@@ -589,7 +552,7 @@ task CreateExternalHelp {
 
 # Synopsis: Build the help file CAB with PlatyPS
 task CreateUpdateableHelpCAB {
-    Start-Sleep -Seconds 1
+    Start-Sleep -Seconds 10
     $LandingPage = "$($ScriptRoot)\docs\$($ModuleToBuild).md"
     $null = New-ExternalHelpCab -CabFilesFolder "$($ModulePath)\en-US\" -LandingPagePath $LandingPage -OutputFolder "$($ModulePath)\en-US\"
     Write-Host -NoNewLine "      Creating updateable help cab file"
@@ -607,8 +570,13 @@ task CreateUpdateableHelpCAB {
 #     Write-Host -ForeGroundColor green '...Complete!'
 # }
 
+task GitHubPush Version, UpdateReadMe, {
+
+}
+
 # Synopsis: Push with a version tag.
-task GitHubPushRelease Version, {
+# Updates ReadMe before
+task GitHubPushRelease Version, UpdateReadMe,  {
 	#$changes = exec { git status --short }
 	#assert (-not $changes) "Please, commit changes."
 
@@ -660,22 +628,25 @@ task GitHubPushRelease Version, {
 }
 
 # Synopsis: Commit changes and push to github
-task GithubPush GetReleaseNotes, {
-    Write-Host "      git checkout master"
+task GitHubPush GetReleaseNotes, {
+    $CurrentBranch = Get-GitBranch
+
+    Write-Host "      git checkout $CurrentBranch"
     exec { git checkout master }
     Write-Host "      git add -all"
     exec { git add --all }
     Write-Host "      git status"
     exec { git status }
-    if (-not([string]::IsNullOrEmpty($Script:ReleaseNotes))) {
-        Write-Host "      git commit -s -m ""$Script:ReleaseNotes"""
-        exec { git commit -s -m "$Script:ReleaseNotes"}
+    if (-not([string]::IsNullOrEmpty($ReleaseNotes))) {
+        Write-Host "      git commit -s -m ""$ReleaseNotes"""
+        exec { git commit -s -m "$ReleaseNotes"}
     } else {
-        Write-Host "      git commit -s -m ""v$($Script:Version)"""
-        exec { git commit -s -m "v$($Script:Version)"}
+        Write-Host "      git commit -s -m ""v$($Version)"""
+        exec { git commit -s -m "v$($Version)"}
     }
-    Write-Host "      git checkout master"
-    exec { git push origin master }
+
+    Write-Host "      git checkout $CurrentBranch"
+    exec { git push origin $CurrentBranch }
 	$changes = exec { git status --short }
 	assert (-not $changes) "Please, commit changes."
 }
@@ -705,7 +676,7 @@ task PublishToMyGet GetReleaseNotes, {
             NuGetApiKey = "$Env:MyGetKey"
             Path = "$CurrentReleasePath"
             Repository = "MyGet"
-            ReleaseNotes = $Script:ReleaseNotes
+            ReleaseNotes = $ReleaseNotes
         }
 
         Publish-Module @MyGetParams
@@ -724,12 +695,12 @@ task GetReleaseNotes Version, {
                                 Where-Object {
                                     $line = $_
                                     if( -not $foundVersion ) {
-                                        if( $line -match ('^##\s+\[{0}\]' -f [regex]::Escape($Script:version)) ) {
+                                        if( $line -match ('^##\s+\[{0}\]' -f [regex]::Escape($version)) ) {
                                             $foundVersion = $true
                                             return
                                         }
                                     } else {
-                                        if( $line -match ('^##\s+\[(?!{0})' -f [regex]::Escape($Script:version)) ) {
+                                        if( $line -match ('^##\s+\[(?!{0})' -f [regex]::Escape($version)) ) {
                                             $foundVersion = $false
                                         }
                                     }
@@ -746,10 +717,10 @@ task GetReleaseNotes Version, {
     Write-Host -ForeGroundColor green '...Complete!'
 }
 
-# Synopsis: Prepare artifacts for AppVeyor
+# Synopsis: Prepare artifacts
 task PrepareArtifacts Version, {
     # Compress current Release
-    $ZippedReleasePath = Join-Path -Path $ScratchPath -ChildPath "$ModuleToBuild-$Script:Version.zip"
+    $ZippedReleasePath = Join-Path -Path $ScratchPath -ChildPath "$ModuleToBuild-$Version.zip"
 
     if (Test-Path -Path $CurrentReleasePath) {
         Compress-Archive -Path $CurrentReleasePath -DestinationPath $ZippedReleasePath
@@ -798,7 +769,17 @@ task Build `
         PrepareStage,
         CreateModulePSM1,
         PrepareArtifacts,
-        GithubPush,
+        #GithubPush,
+        BuildSessionCleanup
+
+task BuildAndPush `
+        Configure,
+        CreateHelp,
+        RunTests,
+        PrepareStage,
+        CreateModulePSM1,
+        PrepareArtifacts,
+        GitHubPush,
         BuildSessionCleanup
 
 # Synopsis: Build module without combining source files
