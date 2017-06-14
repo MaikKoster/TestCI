@@ -5,30 +5,22 @@
 if (Test-Path '.\build\.buildenvironment.ps1') {
     . '.\build\.buildenvironment.ps1'
 } else {
-    Write-Error "Without a build environment file we are at a loss as to what to do!"
+    Write-Error 'Without a build environment file we are at a loss as to what to do!'
 }
-
-# Build can be initiated locally or from CI.
-# Update to adjust to CI system
-If ($Env:APPVEYOR) {
-
-} else {
-
-}
-
 
 # Put together our full paths. Generally leave these alone
-$ScriptRoot = (Resolve-Path -Path ".\").Path
-$ModulePath = Join-Path -Path $ScriptRoot -ChildPath $ModuleToBuild
+$ModulePath = Join-Path -Path $BuildRoot -ChildPath $ModuleToBuild
 $ModuleFullPath = Join-Path -Path $ModulePath -ChildPath "$ModuleToBuild.psm1"
-$ScratchPath = Join-Path -Path $ScriptRoot -ChildPath $ScratchFolder
+$ScratchPath = Join-Path -Path $BuildRoot -ChildPath $ScratchFolder
 $ModuleManifestFullPath = Join-Path -Path $ModulePath -ChildPath "$ModuleToBuild.psd1"
-$ReleasePath = Join-Path -Path $ScriptRoot -ChildPath $BaseReleaseFolder
-$CurrentReleasePath = Join-Path -Path $ReleasePath -ChildPath $ModuleToBuild
-$StageReleasePath = Join-Path -Path $ScratchPath -ChildPath $ModuleToBuild   # Just before releasing the module we stage some changes in this location.
+$StageReleasePath = Join-Path -Path $ScratchPath -ChildPath $ModuleToBuild
+$DocumentsPath = Join-Path -Path $BuildRoot -ChildPath $DocumentsFolder
+$ReleaseNotesPath = Join-Path -Path $BuildRoot -ChildPath $ReleaseNotesName
+$LicensePath = Join-Path -Path $BuildRoot -ChildPath $LicenseFileName
+
 
 # Additional build scripts and tools are found here (note that any dot sourced functions must be scoped at the script level)
-$BuildToolPath = Join-Path -Path $ScriptRoot -ChildPath $BuildToolFolder
+$BuildToolPath = Join-Path -Path $BuildRoot -ChildPath $BuildToolFolder
 
 # These are required for a full build process and will be automatically installed if they aren't available
 $RequiredModules = @('BuildHelpers', 'Posh-Git', 'PlatyPS', 'PSScriptAnalyzer', 'Pester', 'Coveralls')
@@ -45,23 +37,20 @@ $ExternalHelp = @"
 
 #Synopsis: Validate system requirements are met
 task ValidateRequirements {
-    Write-Host -NoNewLine '      Running Powershell version 5?'
+    Write-Output '      Running Powershell version 5?'
     assert ($PSVersionTable.PSVersion.Major.ToString() -eq '5') 'Powershell 5 is required for this build to function properly (you can comment this assert out if you are able to work around this requirement)'
-    Write-Host -ForegroundColor Green '...Yup!'
 }
 
 #Synopsis: Load required modules if available. Otherwise try to install, then load it.
 task LoadRequiredModules {
     $RequiredModules | Foreach {
         if ($null -eq (get-module $_ -ListAvailable)) {
-            Write-Host -NoNewLine "      Installing $($_) Module"
+            Write-Output "      Install $($_) Module"
             $null = Install-Module $_ -Force
-            Write-Host -ForegroundColor Green '...Installed!'
         }
         if (get-module $_ -ListAvailable) {
-            Write-Host -NoNewLine "      Importing $($_) Module"
+            Write-Output "      Import $($_) Module"
             Import-Module $_ -Force
-            Write-Host -ForegroundColor Green '...Loaded!'
         }
         else {
             throw 'How did you even get here?'
@@ -82,7 +71,7 @@ task LoadBuildTools {
 task LoadModuleManifest {
     assert (Test-Path $ModuleManifestFullPath) "Unable to locate the module manifest file: $ModuleManifestFullPath"
 
-    Write-Host -NoNewLine '      Loading the existing module manifest for this module'
+    Write-Output '      Load the existing module manifest for this module'
     $Script:Manifest = Import-PowerShellDataFile -Path $ModuleManifestFullPath
 
     # Validate we have a rootmodule defined
@@ -96,12 +85,11 @@ task LoadModuleManifest {
 
     # Store this for later
     $Script:ReleaseModule = Join-Path $StageReleasePath $Script:Manifest.RootModule
-    Write-Host -ForegroundColor Green '...Loaded!'
 }
 
 # Synopsis: Create new module manifest
 task CreateModuleManifest -After CreateModulePSM1 {
-    Write-Host -NoNewLine '      Attempting to create a new module manifest file at .'
+    Write-Output "      Create new module manifest file at '$StageReleasePath\$ModuleToBuild.psd1'"
     $Script:Manifest.ModuleVersion = $Script:Version
     $Script:Manifest.FunctionsToExport = $Script:FunctionsToExport
     $Script:Manifest.CmdletsToExport = $Script:Module.ExportedCmdlets.Keys
@@ -144,15 +132,14 @@ task CreateModuleManifest -After CreateModulePSM1 {
     New-ModuleManifest @MyManifest -Path $StageReleasePath\$ModuleToBuild.psd1
 
     # Replace the whole private data section with our own string instead
-    Replace-FileString -Pattern "PrivateData = ''"  $NewPrivateDataString $StageReleasePath\$ModuleToBuild.psd1 -Overwrite -Encoding 'UTF8'
+    Replace-FileString -Pattern "PrivateData = ''"  $NewPrivateDataString "$StageReleasePath\$ModuleToBuild.psd1" -Overwrite -Encoding 'UTF8'
 }
 
 # Synopsis: Load the module project
 task LoadModule {
-    Write-Host -NoNewLine '      Attempting to load the project module.'
+    Write-Output '      Load the project module.'
     try {
         $Script:Module = Import-Module $ModuleManifestFullPath -Force -PassThru
-        Write-Host -ForegroundColor Green '...Loaded!'
     } catch {
         throw "Unable to load the project module: $($ModuleFullPath)"
     }
@@ -165,24 +152,29 @@ task Version LoadModuleManifest, {
     # SPOT for Module Version is the .psd1 file
     # All changes to the Module Version are handled manually!
     # BuildNumber from CI is appended to the CI Build-Version. However has no relevance for any public release
+    # This needs to be adjusted for other CI systems
+    Write-Output '      Validate Version'
 
-    $CurrentVersion = $Manifest.ModuleVersion
+    $Script:Version = $Manifest.ModuleVersion
+    Write-Output "      Current Version: $Version"
 
     if ($Env:APPVEYOR) {
-        $BuildVersion = "$($Version)+$($Env:APPVEYOR_BUILD_NUMBER)"
-        Write-Host "      Build Version: $BuildVersion"
+        $BuildVersion = "$Version+$($Env:APPVEYOR_BUILD_NUMBER)"
+        Write-Output "      Build Version: $BuildVersion"
         Update-AppveyorBuild -Version "$BuildVersion"
+        Write-Output "      Update AppVeyor Build version to '$BuildVersion'"
     } else {
         # Update appveyor.yml file with current version
-        # TODO:
+        $VersionRegEx = '(?<=version: )(.*)'
+        $AppVeyorConfigPath = Join-Path -Path $BuildRoot -ChildPath "Appveyor.yml"
+
+        if (Test-Path $AppVeyorConfigPath) {
+            $AppVeyorConfig = Get-Content -Path $AppVeyorConfigPath -Raw
+            $AppVeyorConfig = $AppVeyorConfig -replace $VersionRegEx,"$Version+{build}"
+            $null = $AppVeyorConfig | Set-Content -Path $AppVeyorConfigPath -Force
+            Write-Output "      Update version string in 'Appveyor.yml'"
+        }
     }
-
-    $Script:Version = $CurrentVersion
-    Write-Host "      Version: $Version"
-    # Beyond this step, $Script:Version should be the referenced version
-    Write-Host -NoNewline "      Validating Version"
-    Write-Host -ForegroundColor Green '...Completed!'
-
 }
 
 # Synopsis: Updates the Module manifest version
@@ -190,26 +182,27 @@ task Version LoadModuleManifest, {
 task UpdateModuleManifest {
     # Update Modulemanifest
     if ($Manifest.ModuleVersion -ne $Version) {
-        Write-Host -NoNewline "      Attempting to update the module manifest version ($($Manifest.ModuleVersion)) to $(($Version).ToString())"
+        Write-Output "      Update the module manifest version ($($Manifest.ModuleVersion)) to $(($Version).ToString())"
         Update-Metadata -Path $ModuleManifestFullPath -PropertyName ModuleVersion -Value $Version
-        Write-Host -ForegroundColor Green '...Updated!'
     }
 }
 
 # Synposis. Updates the download link in the ReadMe file
 # Should only be called when a release is pushed
 task UpdateReadMe {
-    $ReadMePath = Join-Path -Path $ScriptRoot -ChildPath "README.md"
-    Write-Host $ReadMePath
+    $ReadMePath = Join-Path -Path $BuildRoot -ChildPath 'README.md'
+
     if (Test-Path ($ReadMePath)) {
+        Write-Output '      Update download link in README.md'
         $ReadMe = Get-Content -Path $ReadMePath -Raw
-
         $NewDownloadLink = "$ModuleWebsite/releases/download/v$Version/$ModuleToBuild-$Version.zip"
-
         $ReadMe -replace "$ModuleWebsite.+$ModuleToBuild.zip", $NewDownloadLink | Set-Content -Path $ReadMePath -Force -Encoding UTF8
 
-        Write-Host -NoNewLine "      Updating download link in README.md"
-        Write-Host -ForeGroundColor green '...Complete!'
+        if (Test-Path $StageReleasePath) {
+            # Copy updated file to the Release folder
+            Copy-Item -Path $ReadMePath -Destination $StageReleasePath -Force
+            Write-Output "      Copy updated ReadMed to '$StageReleasePath'"
+        }
     }
 }
 
@@ -217,26 +210,26 @@ task UpdateReadMe {
 task Configure ValidateRequirements, LoadRequiredModules, LoadBuildTools, LoadModuleManifest, LoadModule, Version, Clean, {
     # If we made it this far then we are configured!
     $Script:IsConfigured = $True
-    Write-Host -NoNewline '      Configure build environment'
-    Write-Host -ForegroundColor Green '...configured!'
+    Write-Build green '      Configured build environment'
 }
 
 # Synopsis: Remove/regenerate scratch staging directory
 task Clean {
-    Write-Host -NoNewLine "      Clean up our scratch/staging directory at $($ScratchPath)"
+    Write-Output "      Clean up scratch/staging directory at $($ScratchPath)"
     if(Test-Path -Path $ScratchPath) {
         $null = Remove-Item "$ScratchPath\*" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
     }
 
     $null = New-Item -ItemType Directory -Path $ScratchPath -Force
-
-    Write-Host -ForegroundColor Green '...Complete!'
 }
 
 # Synopsis: Create base content tree in scratch staging area
 task PrepareStage {
+    Write-Output "      Prepare stage path at '$StageReleasePath'"
     # Create the directories
-    $null = New-Item $StageReleasePath -ItemType:Directory -Force
+    if (-not (Test-Path -Path $StageReleasePath)){
+        $null = New-Item $StageReleasePath -ItemType:Directory -Force
+    }
 
     Copy-Item -Path $ModuleFullPath -Destination $ScratchPath
     Copy-Item -Path $ModuleManifestFullPath -Destination $ScratchPath
@@ -251,79 +244,72 @@ task PrepareStage {
     } else {
         $null = New-Item "$ScratchPath\en-US" -ItemType:Directory -Force
     }
-    Copy-Item -Path "$ScriptRoot\README.md" -Destination $StageReleasePath
-    Copy-Item -Path "$ScriptRoot\LICENSE" -Destination $StageReleasePath
+    Copy-Item -Path "$BuildRoot\README.md" -Destination $StageReleasePath
+    Copy-Item -Path $LicensePath -Destination $StageReleasePath
 }, GetPublicFunctions
 
 # Synopsis:  Collect a list of our public methods for later module manifest updates
 task GetPublicFunctions {
+    Write-Output '      Parsing for public (exported) function names'
     $Exported = @()
     Get-ChildItem "$($ModulePath)\$($PublicFunctionSource)" -Recurse -Filter "*.ps1" -File | Sort-Object Name | Foreach {
        $Exported += ([System.Management.Automation.Language.Parser]::ParseInput((Get-Content -Path $_.FullName -Raw), [ref]$null, [ref]$null)).FindAll({ $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }, $false) | Foreach {$_.Name}
     }
 
-    # $Script:FunctionsToExport = (Get-ChildItem -Path $ScriptRoot\$($PublicFunctionSource)).BaseName | foreach {$_.ToString()}
+    # $Script:FunctionsToExport = (Get-ChildItem -Path $BuildRoot\$($PublicFunctionSource)).BaseName | foreach {$_.ToString()}
     $Script:FunctionsToExport = $Exported
-    Write-Host -NoNewLine '      Parsing for public (exported) function names'
-    Write-Host -ForegroundColor Green '...Complete!'
 }
 
 # Synopsis: Assemble the module for release
 task CreateModulePSM1 {
+    Write-Output '      Combine module functions and data into single PSM1 file'
     $CombineFiles = ""
-    # Have the License on top
-    $LicensePath = Join-Path -Path $ScriptRoot -ChildPath "LICENSE"
+
+    # Put the License on top
     If (Test-Path($LicensePath)) {
+        Write-Output '      Add License'
         $CombineFiles += (Get-Content -Path "$LicensePath" -Raw) + "`r`n`r`n"
-        Write-Host -NoNewLine "      Adding License"
-        Write-Host -ForegroundColor Green '...Complete!'
     }
 
     $PublicPath = Join-Path -Path $ScratchPath -ChildPath $PublicFunctionSource
     if (Test-Path -Path $PublicPath) {
+        Write-Output "      Combine public source files from '$PublicPath'"
         $CombineFiles += "#region Public module functions and data `r`n`r`n"
-        Write-Host  "      Public Source Files: $PublicPath"
         Get-childitem  "$PublicPath\*.ps1" | foreach {
-            Write-Host "             $($_.Name)"
+            Write-Output "             $($_.Name)"
             $CombineFiles += (Get-Content $_ -Raw) + "`r`n`r`n"
         }
         $CombineFiles += "#endregion"
-        Write-Host -NoNewline "      Combining public source files"
-        Write-Host -ForegroundColor Green '...Complete!'
     }
 
     # "Other" files might not always exist
     $OtherPath = Join-Path -Path $ScratchPath -ChildPath $OtherModuleSource
     if (Test-Path -Path $OtherPath) {
+        Write-Output "      Combine other source files from '$OtherPath'"
         $CombineFiles += "#region Other Module functions and data `r`n`r`n"
-        Write-Host "      Other Source Files: $($OtherPath)"
         Get-Childitem -Path"$OtherPath\*.ps1" | foreach {
-            Write-Host "             $($_.Name)"
+            Write-Output "             $($_.Name)"
             $CombineFiles += (Get-content $_ -Raw) + "`r`n`r`n"
         }
         $CombineFiles += "#endregion"
-        Write-Host -NoNewLine "      Combining other source files"
-        Write-Host -ForegroundColor Green '...Complete!'
     } else {
         $CombineFiles = ""
     }
 
     $PrivatePath = Join-Path -Path $ScratchPath -ChildPath $PrivateFunctionSource
     if (Test-Path -Path $PrivatePath) {
+        Write-Output "      Combine private source files from '$PrivatePath'"
         $CombineFiles += "#region Private Module functions and data`r`n`r`n"
-        Write-Host  "      Private Source Files: $PrivatePath"
         Get-childitem  "$PrivatePath\*.ps1" | foreach {
-            Write-Host "             $($_.Name)"
+            Write-Output "             $($_.Name)"
             $CombineFiles += (Get-Content $_ -Raw) + "`r`n`r`n"
         }
         $CombineFiles += "#endregion"
-        Write-Host -NoNewLine "      Combining private source files"
-        Write-Host -ForegroundColor Green '...Complete!'
     }
 
-    Set-Content -Path (Join-Path -Path $StageReleasePath -ChildPath "$ModuleToBuild.psm1") -Value $CombineFiles -Encoding UTF8
-    Write-Host -NoNewLine '      Combining module functions and data into one PSM1 file'
-    Write-Host -ForegroundColor Green '...Complete!'
+    $CombinedModulePath = Join-Path -Path $StageReleasePath -ChildPath "$ModuleToBuild.psm1"
+    Write-Output "      Write changes to '$CombinedModulePath'"
+    Set-Content -Path $CombinedModulePath -Value $CombineFiles -Encoding UTF8
 }
 
 # Synopsis: Warn about not empty git status if .git exists.
@@ -339,7 +325,7 @@ task UpdateCBH -Before CreateModulePSM1 {
     $CBHPattern = "(?ms)(\<#.*\.SYNOPSIS.*?#>)"
     Get-ChildItem -Path "$($ScratchPath)\$($PublicFunctionSource)\*.ps1" -File | ForEach {
             $FormattedOutFile = $_.FullName
-            Write-Output "      Replacing CBH in file: $($FormattedOutFile)"
+            Write-Output "      Replace CBH in file: $($FormattedOutFile)"
             $UpdatedFile = (Get-Content  $FormattedOutFile -raw) -Replace $CBHPattern, $ExternalHelp
             $UpdatedFile | Out-File -FilePath $FormattedOutFile -Force -Encoding:utf8
     }
@@ -355,38 +341,36 @@ task AnalyzeScript -After CreateModulePSM1 {
         #ExcludeRules = @('PSAvoidGlobalVars')
     }
 
+    Write-Output '      Analyze Script Module using PSScriptAnalyzer'
     $saResults = Invoke-ScriptAnalyzer @scriptAnalyzerParams
 
     # Save Analyze Results as JSON
-    $saResults | ConvertTo-Json | Set-Content (Join-Path -Path $ScratchPath -ChildPath "ScriptAnalyzerResults.json")
-    Write-Host (Join-Path -Path $ScratchPath -ChildPath "ScriptAnalyzerResults.json")
-    Write-Host -NoNewLine '      Analyzing script module'
-    Write-Host -ForegroundColor Green '...Complete!'
+    $saResultPath = Join-Path -Path $ScratchPath -ChildPath "ScriptAnalyzerResults.json"
+    Write-Output "      Write results to '$saResultPath'"
+    $saResults | ConvertTo-Json | Set-Content $saResultPath
+
     #if ($saResults) {
     #    $saResults | Format-Table
     #    throw "One or more PSScriptAnalyzer errors/warnings where found."
     #}
 
-    #$Analysis = Invoke-ScriptAnalyzer -Path $StageReleasePath
     $saErrors = @($saResults | Where-Object {@('Information','Warning') -notcontains $_.Severity})
-    #Write-Host -NoNewLine '      Analyzing script module'
-    #Write-Host -ForegroundColor Green '...Complete!'
     if ($saErrors.Count -ne 0) {
         throw 'Script Analysis came up with some errors!'
     }
 
     $saWarnings = @($saResults | Where-Object {$_.Severity -eq 'Warning'})
     $saInfo =  @($saResults | Where-Object {$_.Severity -eq 'Information'})
-    Write-Host -ForegroundColor Yellow "          Script Analysis Warnings = $($saWarnings.Count)"
-    Write-Host "          Script Analysis Informational = $($saInfo.Count)"
+    Write-Build  Yellow "          Script Analysis Warnings = $($saWarnings.Count)"
+    Write-Output "          Script Analysis Informational = $($saInfo.Count)"
 }
 
 # Synopsis: Test the project with Pester. Publish Test and Coverage Reports
 # Tests are executed against the source files to get proper Code coverage metrics.
 task RunTests {
     $invokePesterParams = @{
-        Script = (Join-Path -Path $ScriptRoot -ChildPath "tests")
-        OutputFile =  (Join-Path -Path $ScratchPath -ChildPath "TestResults.xml")
+        Script = (Join-Path -Path $BuildRoot -ChildPath 'tests')
+        OutputFile =  (Join-Path -Path $ScratchPath -ChildPath 'TestResults.xml')
         OutputFormat = 'NUnitXml'
         Strict = $true
         PassThru = $true
@@ -399,201 +383,175 @@ task RunTests {
     # Will be loaded properly by first pester test.
     Get-Module -Name $ModuleToBuild -All | Remove-Module -Force -ErrorAction Stop
 
-    # Publish Test Results as NUnitXml
-    $testResults = Invoke-Pester @invokePesterParams;
+    Write-Output '      Run Tests using Pester'
+    $testResults = Invoke-Pester @invokePesterParams
 
     # Save Test Results as JSON
-    $testresults | ConvertTo-Json -Depth 5 | Set-Content  (Join-Path -Path $ScratchPath -ChildPath "PesterResults.json")
+    $PesterResultPath = Join-Path -Path $ScratchPath -ChildPath 'PesterResults.json'
+    Write-Output "      Write results to '$PesterResultPath'"
+    $testresults | ConvertTo-Json -Depth 5 | Set-Content  $PesterResultPath
 
     # Upload Tests to AppVeyor if running in CI environment
-
-    Write-Host -NoNewLine '      Running Tests'
-    Write-Host -ForegroundColor Green '...Complete!'
-
     if ($Env:APPVEYOR) {
         $wc = New-Object 'System.Net.WebClient'
-        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path(Join-Path $ScratchPath "TestResults.xml")))
+        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path(Join-Path $ScratchPath 'TestResults.xml')))
 
-        Write-Host -NoNewLine '      Uploading Testresults to AppVeyor'
-        Write-Host -ForegroundColor Green '...Complete!'
-
+        Write-Output '      Upload Testresults to AppVeyor'
         $CurrentBranch = $Env:APPVEYOR_REPO_BRANCH
 
         # Upload Code Coverage to Coverall
         if (-not([string]::IsNullOrEmpty($Env:CoverallKey))) {
-            Write-Host "Coverage"
+            Write-Output '      Upload CodeCoverage to Coverall'
             $Coverage = Format-Coverage -PesterResults $testResults -CoverallsApiToken "$Env:CoverallKey"  -BranchName $CurrentBranch -Verbose
             Publish-Coverage $Coverage -Verbose
-
-            Write-Host -NoNewLine '      Uploading CodeCoverage to Coverall'
-            Write-Host -ForegroundColor Green '...Complete!'
         }
     }
 }
 
 # Synopsis: Throws an error if any tests do not pass for CI usage
 task ConfirmTestsPassed -After RunTests {
-    Write-Host -NoNewLine '      Confirming Test results'
+    Write-Output '      Confirm Test results'
     # Fail Build after reports are created, this allows CI to publish test results before failing
-    [xml] $xml = Get-Content (Join-Path -Path $ScratchPath -ChildPath "TestResults.xml")
+    [xml] $xml = Get-Content (Join-Path -Path $ScratchPath -ChildPath 'TestResults.xml')
     $numberFails = $xml."test-results".failures
     assert($numberFails -eq 0) ('Failed "{0}" unit tests.' -f $numberFails)
 
     # Fail Build if Coverage is under requirement
-    $json = Get-Content (Join-Path -Path $ScratchPath -ChildPath "PesterResults.json") -Raw | ConvertFrom-Json
+    $json = Get-Content (Join-Path -Path $ScratchPath -ChildPath 'PesterResults.json') -Raw | ConvertFrom-Json
     $overallCoverage = [Math]::Floor(($json.CodeCoverage.NumberOfCommandsExecuted / $json.CodeCoverage.NumberOfCommandsAnalyzed) * 100)
     assert($OverallCoverage -gt $PercentCompliance) ('A Code Coverage of "{0}" does not meet the build requirement of "{1}"' -f $overallCoverage, $PercentCompliance)
-
-    Write-Host -ForegroundColor Green '...Complete!'
 }
 
 # Synopsis: Build help files for module
 task CreateHelp CreateMarkdownHelp, CreateExternalHelp, CreateUpdateableHelpCAB, {
-    Write-Host -NoNewLine '      Create help files'
-    Write-Host -ForegroundColor Green '...Complete!'
+    Write-Output '      Create help files'
 }
 
 task UpdateHelp UpdateMarkdownHelp, CreateExternalHelp, CreateUpdateableHelpCAB, {
-    Write-Host -NoNewLine '      Updating help files'
-    Write-Host -ForegroundColor Green '...Complete!'
+    Write-Output '      Update help files'
 }
 
 # Synopsis: Build help files for module and ignore missing section errors
 task TestCreateHelp Configure, CreateMarkdownHelp, CreateExternalHelp, CreateUpdateableHelpCAB,  {
-    Write-Host -NoNewLine '      Create help files'
-    Write-Host -ForegroundColor Green '...Complete!'
+    Write-Output '      Create help files'
 }
 
 task TestUpdateHelp Configure, UpdateMarkdownHelp, CreateExternalHelp, CreateUpdateableHelpCAB, {
-    Write-Host -NoNewLine '      Updating help files'
-    Write-Host -ForegroundColor Green '...Complete!'
+    Write-Output '      Update help files'
 }
 
 # Synopsis: Build the markdown help files with PlatyPS
 task UpdateMarkdownHelp {
     # Create the .md files and the generic module page md as well
-    $DocRoot = Join-Path -Path $ScriptRoot -ChildPath "docs"
-    $null = Update-MarkdownHelpModule -Path $DocRoot -RefreshModulePage
+    $null = Update-MarkdownHelpModule -Path $DocumentsPath -RefreshModulePage
 
     # Replace each missing element we need for a proper generic module page .md file
-    $ModulePage = Join-Path -Path $DocRoot -ChildPath "$ModuleToBuild.md"
+    $ModulePage = Join-Path -Path $DocumentsPath -ChildPath "$ModuleToBuild.md"
     $ModulePageFileContent = Get-Content -Raw $ModulePage
     $ModulePageFileContent = $ModulePageFileContent -replace '{{Manually Enter Description Here}}', $Manifest.Description
 
     # Function Description should have been updated by PlatyPS
     $ModulePageFileContent | Out-File $ModulePage -Force -Encoding:utf8
 
-    $MissingDocumentation = Select-String -Path "$DocRoot\*.md" -Pattern "({{.*}})"
+    Write-Output "      Update markdown documentation with PlatyPS at '$DocumentsPath'"
+    $MissingDocumentation = Select-String -Path "$DocumentsPath\*.md" -Pattern "({{.*}})"
     if ($MissingDocumentation.Count -gt 0) {
-        Write-Host -ForegroundColor Yellow ''
-        Write-Host -ForegroundColor Yellow '   The documentation that got generated resulted in missing sections which should be filled out.'
-        Write-Host -ForegroundColor Yellow '   Please review the following sections in your comment based help, fill out missing information and rerun this build:'
-        Write-Host -ForegroundColor Yellow '   (Note: This can happen if the .EXTERNALHELP CBH is defined for a function before running this build.)'
-        Write-Host ''
-        Write-Host -ForegroundColor Yellow "Path of files with issues: $DocRoot\docs\"
-        Write-Host ''
+        Write-Build Yellow ''
+        Write-Build Yellow '   The documentation that got generated resulted in missing sections which should be filled out.'
+        Write-Build Yellow '   Please review the following sections in your comment based help, fill out missing information and rerun this build:'
+        Write-Build Yellow '   (Note: This can happen if the .EXTERNALHELP CBH is defined for a function before running this build.)'
+        Write-Build Yellow ''
+        Write-Build Yellow "Path of files with issues: $DocumentsPath\"
+        Write-Build Yellow ''
         $MissingDocumentation | Select FileName,Matches | ft -auto
-        Write-Host -ForegroundColor Yellow ''
+        Write-Build Yellow ''
         #pause
 
        # throw 'Missing documentation. Please review and rebuild.'
     }
-
-    Write-Host -NoNewLine '      Updating markdown documentation with PlatyPS'
-    Write-Host -ForegroundColor Green '...Complete!'
 }
 
 task CreateMarkdownHelp GetPublicFunctions, {
-    $DocRoot = Join-Path -Path $ScriptRoot -ChildPath "docs"
     $OnlineModuleLocation = "$($ModuleWebsite)/$($BaseReleaseFolder)/blob/master"
     $FwLink = "$($OnlineModuleLocation)/docs/$($ModuleToBuild).md"
-    $ModulePage = Join-Path -Path $DocRoot -ChildPath "$ModuleToBuild.md"
+    $ModulePage = Join-Path -Path $DocumentsPath -ChildPath "$ModuleToBuild.md"
 
     # Create the .md files and the generic module page md as well
-    $null = New-MarkdownHelp -Module $ModuleToBuild -OutputFolder $DocRoot -Force -WithModulePage -Locale 'en-US' -FwLink $FwLink -HelpVersion $Version
+    Write-Output "      Create markdown documentation with PlatyPS at '$DocumentsPath'"
+    $null = New-MarkdownHelp -Module $ModuleToBuild -OutputFolder $DocumentsPath -Force -WithModulePage -Locale 'en-US' -FwLink $FwLink -HelpVersion $Version
 
+    Write-Output '      Update missing information in new markdown files'
     # Replace each missing element we need for a proper generic module page .md file
     $ModulePageFileContent = Get-Content -Raw $ModulePage
     $ModulePageFileContent = $ModulePageFileContent -replace '{{Manually Enter Description Here}}', $Manifest.Description
     $Script:FunctionsToExport | Foreach-Object {
-        Write-Host "      Updating definition for the following function: $($_)"
+        Write-Output "      Update definition for the following function: $($_)"
         $TextToReplace = "{{Manually Enter $($_) Description Here}}"
         $ReplacementText = (Get-Help -Detailed $_).Synopsis
         $ModulePageFileContent = $ModulePageFileContent -replace $TextToReplace, $ReplacementText
     }
     $ModulePageFileContent | Out-File $ModulePage -Force -Encoding:utf8
 
-    $MissingDocumentation = Select-String -Path "$($DocRoot)\*.md" -Pattern "({{.*}})"
+    $MissingDocumentation = Select-String -Path "$($DocumentsPath)\*.md" -Pattern "({{.*}})"
     if ($MissingDocumentation.Count -gt 0) {
-        Write-Host -ForegroundColor Yellow ''
-        Write-Host -ForegroundColor Yellow '   The documentation that got generated resulted in missing sections which should be filled out.'
-        Write-Host -ForegroundColor Yellow '   Please review the following sections in your comment based help, fill out missing information and rerun this build:'
-        Write-Host -ForegroundColor Yellow '   (Note: This can happen if the .EXTERNALHELP CBH is defined for a function before running this build.)'
-        Write-Host ''
-        Write-Host -ForegroundColor Yellow "Path of files with issues: $($DocRoot)\"
-        Write-Host ''
+        Write-Build Yellow ''
+        Write-Build Yellow '   The documentation that got generated resulted in missing sections which should be filled out.'
+        Write-Build Yellow '   Please review the following sections in your comment based help, fill out missing information and rerun this build:'
+        Write-Build Yellow '   (Note: This can happen if the .EXTERNALHELP CBH is defined for a function before running this build.)'
+        Write-Build Yellow ''
+        Write-Build Yellow "Path of files with issues: $($DocumentsPath)\"
+        Write-Build Yellow
         $MissingDocumentation | Select FileName,Matches | ft -auto
-        Write-Host -ForegroundColor Yellow ''
+        Write-Build Yellow ''
         #pause
 
        # throw 'Missing documentation. Please review and rebuild.'
     }
-
-    Write-Host -NoNewLine '      Creating markdown documentation with PlatyPS'
-    Write-Host -ForegroundColor Green '...Complete!'
 }
 
 # Synopsis: Build the external help files with PlatyPS
 task CreateExternalHelp {
-    $null = New-ExternalHelp "$($ScriptRoot)\docs" -OutputPath "$($ModulePath)\en-US\" -Force
-    Write-Host -NoNewLine '      Creating markdown help files'
-    Write-Host -ForeGroundColor green '...Complete!'
+    Write-Output "      Create external help file at '$ModulePath\en-US'"
+    if (-not(Test-Path -Path "$ModulePath\en-US")) {
+        $null = New-Item -ItemType Directory -Path "$ModulePath\en-US" -Force
+    }
+    $null = New-ExternalHelp $DocumentsPath -OutputPath "$ModulePath\en-US\" -Force
 }
 
 # Synopsis: Build the help file CAB with PlatyPS
 task CreateUpdateableHelpCAB {
-    Start-Sleep -Seconds 10
-    $LandingPage = "$($ScriptRoot)\docs\$($ModuleToBuild).md"
+    Write-Output '      Create updateable help cab file'
+    # Remove files from previous build as New-ExternalHelpCab will fail otherwise
+    $null = Get-ChildItem -Path "$ModulePath\en-US\$($ModuleToBuild)_*"  | Remove-Item -Force
+    $LandingPage = "$DocumentsPath\$ModuleToBuild.md"
     $null = New-ExternalHelpCab -CabFilesFolder "$($ModulePath)\en-US\" -LandingPagePath $LandingPage -OutputFolder "$($ModulePath)\en-US\"
-    Write-Host -NoNewLine "      Creating updateable help cab file"
-    Write-Host -ForeGroundColor green '...Complete!'
-}
-
-
-# task PushHelpFiles {
-#     $DocRoot = Join-Path -Path $ScriptRoot -ChildPath "docs"
-
-#     $null = Remove-Item -Path $DocRoot -Force -Recurse -ErrorAction SilentlyContinue
-#     $null = New-Item -Path $DocRoot -ItemType:Directory
-#     Copy-Item -Path "$($StageReleasePath)\docs\*" -Destination $DocRoot -Recurse
-#     Write-Host -NoNewLine "      Updating documentation at $($DocRoot)"
-#     Write-Host -ForeGroundColor green '...Complete!'
-# }
-
-task GitHubPush Version, UpdateReadMe, {
-
 }
 
 # Synopsis: Push with a version tag.
-# Updates ReadMe before
-task GitHubPushRelease Version, UpdateReadMe, GitHubPush,  {
-	#$changes = exec { git status --short }
-	#assert (-not $changes) "Please, commit changes."
+# Triggers Update in ReadMe and Release Notes
+task GitHubPushRelease Version, UpdateReadMe, UpdateReleaseNotes, PrepareArtifacts, GitHubPush,  {
+	$changes = exec { git status --short }
+	assert (-not $changes) 'Please, commit changes'
 
-	#exec { git push }
-	#exec { git tag -a "v$($Script:Version)" -m "v$($Script:Version)" }
-	#exec { git push origin "v$($Script:Version)" }
-
+    if (-not([string]::IsNullOrEmpty($env:GitHubKey))) {
     #if ($ENV:APPVEYOR_REPO_BRANCH -eq 'master' -and [string]::IsNullOrWhiteSpace($ENV:APPVEYOR_PULL_REQUEST_NUMBER)) {
         #Create GitHub release
-        Write-Host 'Starting GitHub release'
+        Write-Output '      Start GitHub release'
+        $GitHubApiUri = ($ModuleWebsite -replace "https://github.com", "https://api.github.repos")
+        $CurrentBranch = Get-GitBranch
+
         $releaseData = @{
             tag_name         = "v$Version"
-            target_commitish = 'master'
+            target_commitish = "$CurrentBranch"
             name             = "v$Version"
             Body             = $ReleaseNotes
-            draft            = $true
-            prerelease       = $false
+            draft            = $true # adjust as necessary
+        }
+
+        if ($Version -like '*PRE*') {
+            $releaseData.prerelease = $true
+        } else {
+            $releaseData.prerelease = $false
         }
 
         $auth = 'Basic ' + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes($env:GitHubKey + ':x-oauth-basic'))
@@ -607,12 +565,13 @@ task GitHubPushRelease Version, UpdateReadMe, GitHubPush,  {
             Body        = (ConvertTo-Json -InputObject $releaseData -Compress)
         }
 
-        $ZippedReleasePath = Join-Path -Path $ScratchPath -ChildPath "$ModuleToBuild-$Version.zip"
-
+        Write-Output "      Create new release 'v$Version'"
         $result = Invoke-RestMethod @releaseParams
+
+        $ZippedRelease = Resolve-Path -Path $ZippedReleasePath -Leaf
+
         $uploadUri = $result | Select-Object -ExpandProperty upload_url
-        $uploadUri = $uploadUri -replace '\{\?name,label\}', "?name=$ModuleToBuild-$Version.zip"
-        #$uploadUri = $uploadUri + "?name=$ModuleToBuild-$Script:Version.zip"
+        $uploadUri = $uploadUri -replace '\{\?name,label\}', "?name=$ZippedRelease"
 
         $uploadParams = @{
             Uri         = $uploadUri
@@ -625,76 +584,77 @@ task GitHubPushRelease Version, UpdateReadMe, GitHubPush,  {
         }
 
         $result = Invoke-RestMethod @uploadParams
-        Write-Host -NoNewLine "      Creating GitHub release"
-        Write-Host -ForeGroundColor green '...Complete!'
-    #}
+        Write-Output "      Upload '$ZippedRelease'"
+    } else {
+        Write-Error 'GitHubKey not available.'
+    }
 }
 
 # Synopsis: Commit changes and push to github
 task GitHubPush GetReleaseNotes, {
     $CurrentBranch = Get-GitBranch
 
-    Write-Host "      git checkout $CurrentBranch"
-    exec { git checkout master }
-    Write-Host "      git add -all"
+    Write-Output "      git checkout $CurrentBranch"
+    exec { git checkout $CurrentBranch }
+    Write-Output '      git add --all'
     exec { git add --all }
-    Write-Host "      git status"
+    Write-Output '      git status'
     exec { git status }
-    if (-not([string]::IsNullOrEmpty($ReleaseNotes))) {
-        Write-Host "      git commit -s -m ""$ReleaseNotes"""
-        exec { git commit -s -m "$ReleaseNotes"}
-    } else {
-        Write-Host "      git commit -s -m ""v$($Version)"""
-        exec { git commit -s -m "v$($Version)"}
-    }
+    Write-Output "      git commit -s -m ""v$($Version)"""
+    exec { git commit -s -m "v$($Version)"}
 
-    Write-Host "      git checkout $CurrentBranch"
+    Write-Output "      git push origin $CurrentBranch"
     exec { git push origin $CurrentBranch }
 	$changes = exec { git status --short }
-	assert (-not $changes) "Please, commit changes."
+	assert (-not $changes) 'Please, commit changes.'
 }
 
 # Synopsis: Push the project to PSScriptGallery
 task PublishToPSGallery GetReleaseNotes, {
     if (-not([string]::IsNullOrEmpty("$Env:PSGalleryKey"))) {
-        # Prepare Publis-Module parameters
-        $PSGalleryParams = @{
-            NuGetApiKey = "$Env:PSGalleryKey"
-            Path = "$CurrentReleasePath"
-            Repository = "PSGallery"
-            ReleaseNotes = $Script:ReleaseNotes
-        }
+        if (Test-Path -Path $StageReleasePath) {
+            # Prepare Publish-Module parameters
+            $PSGalleryParams = @{
+                NuGetApiKey = "$Env:PSGalleryKey"
+                Path = "$StageReleasePath"
+                Repository = 'PSGallery'
+                ReleaseNotes = $ReleaseNotes
+            }
 
-        Publish-Module @PSGalleryParams
-        Write-Host -NoNewLine "      Uploading project to PSGallery"
-        Write-Host -ForeGroundColor green '...Complete!'
+            Publish-Module @PSGalleryParams
+            Write-Output  '      Upload project to PSGallery'
+        } else {
+            Write-Error "      Release Path '$StageReleasePath' not found"
+        }
     }
 }
 
 # Synopsis: Push the project to PSScriptGallery
 task PublishToMyGet GetReleaseNotes, {
     if (-not([string]::IsNullOrEmpty("$Env:MyGetKey"))) {
-        # Prepare Publis-Module parameters
-        $MyGetParams = @{
-            NuGetApiKey = "$Env:MyGetKey"
-            Path = "$CurrentReleasePath"
-            Repository = "MyGet"
-            ReleaseNotes = $ReleaseNotes
-        }
+        if (Test-Path -Path $StageReleasePath) {
+            # Prepare Publish-Module parameters
+            $MyGetParams = @{
+                NuGetApiKey = "$Env:MyGetKey"
+                Path = "$StageReleasePath"
+                Repository = 'MyGet'
+                ReleaseNotes = $ReleaseNotes
+            }
 
-        Publish-Module @MyGetParams
-        Write-Host -NoNewLine "      Uploading project to MyGet"
-        Write-Host -ForeGroundColor green '...Complete!'
+            Publish-Module @MyGetParams
+            Write-Output '      Upload project to MyGet'
+        } else {
+            Write-Error "      Release Path '$StageReleasePath' not found"
+        }
     }
 }
 
 # Synopsis: Extracts the current Releasenotes from the ChangeLog
 task GetReleaseNotes Version, {
     # Get Version release notes from Changelog
-    $ChangeLogPath = Join-Path -Path $ScriptRoot -ChildPath "CHANGELOG.md"
-
-    if (Test-Path $ChangeLogPath) {
-        $VersionReleaseNotes = Get-Content -Path $ChangeLogPath |
+    Write-Output "      Extract release notes from '$ReleaseNotesName'"
+    if (Test-Path $ReleaseNotesPath) {
+        $VersionReleaseNotes = Get-Content -Path $ReleaseNotesPath |
                                 Where-Object {
                                     $line = $_
                                     if( -not $foundVersion ) {
@@ -714,31 +674,64 @@ task GetReleaseNotes Version, {
 
     if($VersionReleaseNotes ) {
         $Script:ReleaseNotes =  ($VersionReleaseNotes -join [Environment]::NewLine)
+        Write-Output "      Relase Notes for Version $($Version):"
+        Write-Output "$($VersionReleaseNotes -join "$([Environment]::NewLine)      ")"
     }
+}
 
-    Write-Host -NoNewLine "      Extracting Release Notes from CHANGELOG.md"
-    Write-Host -ForeGroundColor green '...Complete!'
+# Synopsis: Sets the Release date for the current version when creating a release on GitHub
+task UpdateReleaseNotes Version, {
+    if (Test-Path $ReleaseNotesPath) {
+        $ReleaseNotes = Get-Content -Path $ReleaseNotesPath -Raw
+
+        if (-not([string]::IsNullOrEmpty($ReleaseNotes))) {
+            # Update the current Release with the current date
+            Write-Output '      Update release notes with current release date'
+            $ReleaseRegEx = '(?<=##\s+\[{0}\] - )(Unreleased|Not Released|Not Released yet)(.*)' -f [regex]::Escape($version)
+            $ReleaseDate = (Get-Date).ToString("yyyy-MM-dd")
+            $ReleaseNotes = $ReleaseNotes -replace "$ReleaseRegEx", "$ReleaseDate"
+
+            # Get list of all versions in the Release Notes
+            $VersionRegEx = '(?<=(##\s+\[)).*(?=(\]))'
+            $LastVersion = $ReleaseNotes | select-string -pattern '(?<=(##\s+\[)).*(?=(\]))' -AllMatches | Select-Object -ExpandProperty Matches | Select-Object -ExpandProperty Value -First 1 -Skip 1
+
+            if (-not([string]::IsNullOrEmpty($LastVersion))) {
+                Write-Output "      Last Version: $LastVersion"
+                # Build GitHub compare string
+                $CompareLink = "($ModuleWebsite/compare/v$LastVersion...v$Version)#"
+                # Need to use a Regex object as -replace does not support replacing individual occurences
+                $CompareRegEx = [Regex]'(?<=\[Full Changelog\])(.*)'
+                $ReleaseNotes = $CompareRegEx.Replace($ReleaseNotes,$CompareLink,1)
+                Write-Output "      Create GitHub 'Compare' link"
+            }
+
+            # Write back changes
+            $ReleaseNotes | Set-Content -Path $ReleaseNotesPath -Encoding UTF8
+            Write-Output "      Save changes to '$RelaseNotesPath'"
+
+            if (Test-Path $StageReleasePath) {
+                # Copy updated file to the Release folder
+                Copy-Item -Path $ReleaseNotesPath -Destination $StageReleasePath -Force
+                Write-Output "      Copy updated Release Notes to '$StageReleasePath'"
+            }
+        } else {
+            Write-Warning "      No Release Notes found at '$ReleaseNotesPath'"
+        }
+    }
 }
 
 # Synopsis: Prepare artifacts
 task PrepareArtifacts Version, {
     # Compress current Release
-    $ZippedReleasePath = Join-Path -Path $ScratchPath -ChildPath "$ModuleToBuild-$Version.zip"
+    $Script:ZippedReleasePath = Join-Path -Path $ScratchPath -ChildPath "$ModuleToBuild-$Version.zip"
 
-    if (Test-Path -Path $CurrentReleasePath) {
-        Compress-Archive -Path $CurrentReleasePath -DestinationPath $ZippedReleasePath
+    if (Test-Path -Path $StageReleasePath) {
+        Write-Output "      Create compressed release file at '$ZippedReleasePath'"
+        Compress-Archive -Path $StageReleasePath -DestinationPath $ZippedReleasePath
+    }
 
-        # if ($Env:APPVEYOR) {
-        #     Push-AppveyorArtifact $ZippedReleasePath -File (Split-Path -Path $ZippedReleasePath -Leaf )
-        #     if (Test-Path -Path "$ScratchPath\ScriptAnalyzer.json") {
-        #         Push-AppveyorArtifact "$ScratchPath\ScriptAnalyzer.json"
-        #     }
-        #     if (Test-Path -Path "$ScratchPath\PesterResults.json") {
-        #         Push-AppveyorArtifact "$ScratchPath\PesterResults.json"
-        #     }
-        #     Write-Host -NoNewLine "      Publishing artificats to AppVeyor"
-        #     Write-Host -ForeGroundColor green '...Complete!'
-        # }
+    if ($Env:APPVEYOR) {
+        Push-AppveyorArtifact $ZippedReleasePath
     }
 }
 
@@ -746,33 +739,21 @@ task PrepareArtifacts Version, {
 task BuildSessionCleanup {
     # Clean up loaded modules if they are loaded
     $RequiredModules | Foreach {
-        Write-Output "      Removing $($_) module (if loaded)."
+        Write-Output "      Remove $($_) module (if loaded)"
         Remove-Module $_  -Erroraction Ignore
     }
-    Write-Output "      Removing $ModuleToBuild module  (if loaded)."
+    Write-Output "      Remove $ModuleToBuild module  (if loaded)"
     Remove-Module $ModuleToBuild -Erroraction Ignore
 }
 
 # Synopsis: The default build
 task . `
         Configure,
-	    RunTests,
-        PrepareStage,
-        FormatCode,
-        CreateHelp,
-        CreateModulePSM1,
-        PushVersionRelease,
-        PushCurrentRelease,
-        BuildSessionCleanup
-
-task Build `
-        Configure,
         CreateHelp,
         RunTests,
         PrepareStage,
         CreateModulePSM1,
         PrepareArtifacts,
-        #GithubPush,
         BuildSessionCleanup
 
 task BuildAndPush `
@@ -791,15 +772,5 @@ task BuildAndRelease `
         RunTests,
         PrepareStage,
         CreateModulePSM1,
-        PrepareArtifacts,
         GitHubPushRelease,
         BuildSessionCleanup
-
-# Synopsis: Build module without combining source files
-task BuildWithoutCombiningSource `
-        Configure,
-	    CreateHelp,
-        RunTests,
-        PrepareStage,
-        CopyModulePSM1,
-        PrepareArtifacts

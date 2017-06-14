@@ -8,6 +8,9 @@ $ModuleToBuild = 'ConfigMgr'
 # Project website (used for external help cab file definition)
 $ModuleWebsite = 'https://github.com/MaikKoster/TestCI'
 
+# Name of the folder, containing the documentation
+$DocumentsFolder = "docs"
+
 # Public functions (to be exported by file name as the function name)
 $PublicFunctionSource = "public"
 
@@ -17,12 +20,14 @@ $PrivateFunctionSource = "private"
 # Other module source
 $OtherModuleSource = "other"
 
-# Release directory. You typically want a module to reside in a folder of the same name in order to publish to psgallery
-# among other things.
-$BaseReleaseFolder = 'release'
-
 # Build tool path (these scripts are dot sourced)
 $BuildToolFolder = 'build'
 
 # Scratch path - this is where all our scratch work occurs. It will be cleared out at every run.
 $ScratchFolder = 'artifacts'
+
+# Name of the Release Notes file
+$ReleaseNotesName = 'CHANGELOG.md'
+
+# Name of the License file
+$LicenseFileName = "LICENSE"

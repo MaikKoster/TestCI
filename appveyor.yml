@@ -2,7 +2,7 @@
 build: off
 
 # Version number
-version: 0.1.45+{build}
+version: 0.1.38+{build}
 
 skip_commits:
   files:
@@ -43,7 +43,15 @@ init:
       Install-Module InvokeBuild -Force
 
 build_script:
-  - ps: Invoke-Build -Task Build -Verbose
+  - ps: |
+      if ($Env:APPVEYOR_REPO_BRANCH -eq 'master') {
+        # Build and create a new release on GitHub when building on master
+        Invoke-Build -Task BuildAndRelease
+      } else {
+        # Build only
+        Invoke-Build
+      }
+
 
 on_success:
 #  - git checkout master
@@ -53,19 +61,17 @@ on_success:
 #  - git commit -s -m "Update version to %APPVEYOR_BUILD_VERSION%"
 #  - git push origin master
 
-artifacts:
-  - path: artifacts\ConfigMgr-$(appveyor_build_version).zip
-    name: ConfigMgr-$(appveyor_build_version).zip
+# artifacts:
+#   - path: artifacts\ConfigMgr-$(appveyor_build_version).zip
+#     name: ConfigMgr-$(appveyor_build_version).zip
 
-deploy:
-  release: v$(appveyor_build_version)
-  description: 'Release description'
-  provider: GitHub
-  auth_token:
-    secure: sF4El1RbRQ5kkI1+K5sv9AZlwkaJE9OeOyUnTBwtVyNeo7krRP0V1C607Tal3sUQ
-  artifact: ConfigMgr-$(appveyor_build_version).zip
-  draft: true
-  prerelease: false
-  force_update: true
-  on:
-    branch: master                 # release from master branch only
+
+
+
+
+
+
+
+
+
+
