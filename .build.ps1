@@ -594,8 +594,8 @@ task GitHubPushRelease Version, UpdateReadMe, UpdateReleaseNotes, PrepareArtifac
 task GitHubPush GetReleaseNotes, {
     $CurrentBranch = Get-GitBranch
 
-    Write-Output "      git checkout $CurrentBranch"
-    exec { git checkout $CurrentBranch }
+    #Write-Output "      git checkout $CurrentBranch"
+    #exec { git checkout $CurrentBranch }
     Write-Output '      git add --all'
     exec { git add --all }
     Write-Output '      git status'
@@ -707,7 +707,7 @@ task UpdateReleaseNotes Version, {
 
             # Write back changes
             $ReleaseNotes | Set-Content -Path $ReleaseNotesPath -Encoding UTF8
-            Write-Output "      Save changes to '$RelaseNotesPath'"
+            Write-Output "      Save changes to '$ReleaseNotesPath'"
 
             if (Test-Path $StageReleasePath) {
                 # Copy updated file to the Release folder
