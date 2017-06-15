@@ -564,7 +564,7 @@ task GitHubPushRelease Version, UpdateReadMe, UpdateReleaseNotes, PrepareArtifac
             tag_name         = "v$Version"
             target_commitish = "$CurrentBranch"
             name             = "v$Version"
-            Body             = $ReleaseNotes
+            body             = $ReleaseNotes
             draft            = $false # adjust as necessary
         }
 
