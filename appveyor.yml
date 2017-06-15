@@ -2,7 +2,7 @@
 build: off
 
 # Version number
-version: 0.1.40+{build}
+version: 0.1.41+{build}
 
 skip_commits:
   files:
@@ -64,6 +64,9 @@ on_success:
 # artifacts:
 #   - path: artifacts\ConfigMgr-$(appveyor_build_version).zip
 #     name: ConfigMgr-$(appveyor_build_version).zip
+
+
+
 
 
 

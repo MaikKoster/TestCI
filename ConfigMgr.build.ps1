@@ -202,7 +202,7 @@ task UpdateReadMe Version, {
         $ReadMe = $ReadMe -replace $EmptyLinesRegex, "$([Environment]::NewLine)$([Environment]::NewLine)"
 
         Write-Output '      Update download link'
-        Write-Output "LinkRegex: $LinkRegex"
+        $LinkRegex =  "(?<=Download )(\[$ModuleToBuild.*zip\))"
         $NewDownloadLink = "[$ModuleToBuild-$Version.zip]($ModuleWebsite/releases/download/v$Version/$ModuleToBuild-$Version.zip)"
         $ReadMe = $ReadMe -replace $LinkRegex, $NewDownloadLink
 
@@ -545,7 +545,7 @@ task CreateUpdateableHelpCAB CreateExternalHelp,  {
 
 # Synopsis: Push with a version tag.
 # Triggers Update in ReadMe and Release Notes
-task GitHubPushRelease Version, UpdateReadMe, UpdateReleaseNotes, PrepareArtifacts, GitHubPush,  {
+task GitHubPushRelease Version, UpdateReadMe, UpdateReleaseNotes, PrepareArtifacts, GitHubPush, GetReleaseNotes, {
 	$changes = exec { git status --short }
 	assert (-not $changes) 'Please, commit changes'
 
@@ -565,7 +565,7 @@ task GitHubPushRelease Version, UpdateReadMe, UpdateReleaseNotes, PrepareArtifac
             target_commitish = "$CurrentBranch"
             name             = "v$Version"
             Body             = $ReleaseNotes
-            draft            = $true # adjust as necessary
+            draft            = $false # adjust as necessary
         }
 
         if ($Version -like '*PRE*') {
@@ -612,7 +612,7 @@ task GitHubPushRelease Version, UpdateReadMe, UpdateReleaseNotes, PrepareArtifac
 }
 
 # Synopsis: Commit changes and push to github
-task GitHubPush GetReleaseNotes, {
+task GitHubPush {
     if ($Env:APPVEYOR) {
         $CurrentBranch = $Env:APPVEYOR_REPO_BRANCH
     } else {
