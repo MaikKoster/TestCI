@@ -1,7 +1,7 @@
 ﻿# ConfigMgr Module Release History
 
 ## [0.1.30] - Unreleased
-[Full Changelog](https://github.com/MaikKoster/TestCI/compare/v0.1.39...v0.1.39)
+[Full Changelog](https://github.com/MaikKoster/TestCI/compare/v0.1.39...v0.1.40)
 
 ### Added
 - Something important
