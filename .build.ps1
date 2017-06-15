@@ -560,7 +560,7 @@ task GitHubPushRelease Version, UpdateReadMe, UpdateReleaseNotes, PrepareArtifac
 
         $auth = 'Basic ' + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes($env:GitHubKey + ':x-oauth-basic'))
         $releaseParams = @{
-            Uri         = "$ModuleWebsite/releases"
+            Uri         = "$GitHubApiUri/releases"
             Method      = 'POST'
             Headers     = @{
                 Authorization = $auth
@@ -587,8 +587,9 @@ task GitHubPushRelease Version, UpdateReadMe, UpdateReleaseNotes, PrepareArtifac
             InFile      = "$ZippedReleasePath"
         }
 
-        $result = Invoke-RestMethod @uploadParams
         Write-Output "      Upload '$ZippedRelease'"
+        $result = Invoke-RestMethod @uploadParams
+
     } else {
         Write-Error 'GitHubKey not available.'
     }
