@@ -1,10 +1,9 @@
 ﻿# ConfigMgr Module Release History
 
-## [0.1.42] - Unreleased
-[Full Changelog]()
+## [0.1.42] - 2017-06-15
+[Full Changelog](https://github.com/MaikKoster/TestCI/compare/v0.1.41...v0.1.42)
 
 - Lets test AppVeyor Release Build
-
 
 ## [0.1.41] - 2017-06-15
 [Full Changelog](https://github.com/MaikKoster/TestCI/compare/v0.1.40...v0.1.41)
