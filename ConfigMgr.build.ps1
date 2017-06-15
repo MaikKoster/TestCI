@@ -527,7 +527,7 @@ task CreateExternalHelp {
 
     Write-Output "      Create external help file at '$HelpPath'"
     if (-not(Test-Path -Path "$HelpPath")) {
-        $null = New-Item -ItemType Directory -Path "$MHelpPath" -Force
+        $null = New-Item -ItemType Directory -Path "$HelpPath" -Force
     }
     $null = New-ExternalHelp $DocumentsPath -OutputPath "$HelpPath\" -Force
 }
