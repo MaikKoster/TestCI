@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<helpItems schema="maml">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<helpItems xmlns="http://msh" schema="maml">
 
 <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
 <command:details><command:name>Get-CMInstance</command:name>
@@ -20,7 +20,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="2" aliases="none"><maml:name>Filter</maml:name>
 <maml:Description><maml:para>Specifies the Where clause to filter the specified ConfigMgr WMI provider class. If no filter is supplied, all objects will be returned.
@@ -29,7 +29,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Lazy"><maml:name>IncludeLazy</maml:name>
 <maml:Description><maml:para>Specifies if the lazy properties shall be fetched as well. On default, lazy properties won't be included in the result.
@@ -48,7 +48,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="2" aliases="none"><maml:name>Filter</maml:name>
 <maml:Description><maml:para>Specifies the Where clause to filter the specified ConfigMgr WMI provider class. If no filter is supplied, all objects will be returned.
@@ -57,7 +57,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Lazy"><maml:name>IncludeLazy</maml:name>
 <maml:Description><maml:para>Specifies if the lazy properties shall be fetched as well. On default, lazy properties won't be included in the result.
@@ -109,7 +109,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="FolderID, Folder"><maml:name>ParentID</maml:name>
 <maml:Description><maml:para>Specifies the Folder ID
@@ -118,7 +118,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="PackageType"><maml:name>Type</maml:name>
 <maml:Description><maml:para>Specifies the Package Type
@@ -127,7 +127,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 </command:syntaxItem>
 <command:syntaxItem><maml:name>Get-CMPackage</maml:name>
@@ -138,7 +138,7 @@
 <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
 <dev:type><maml:name>String[]</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Search</maml:name>
 <maml:Description><maml:para>Specifies if Name contains a search string
@@ -155,7 +155,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="PackageType"><maml:name>Type</maml:name>
 <maml:Description><maml:para>Specifies the Package Type
@@ -164,7 +164,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 </command:syntaxItem>
 <command:syntaxItem><maml:name>Get-CMPackage</maml:name>
@@ -175,7 +175,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>CIID</maml:name>
 <maml:Description><maml:para>Specifies the CIID of assigned content.
@@ -184,7 +184,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="PackageType"><maml:name>Type</maml:name>
 <maml:Description><maml:para>Specifies the Package Type
@@ -193,7 +193,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 </command:syntaxItem>
 <command:syntaxItem><maml:name>Get-CMPackage</maml:name>
@@ -204,7 +204,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Filter</maml:name>
 <maml:Description><maml:para>Specifies a custom filter to use
@@ -213,7 +213,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 </command:syntaxItem>
 </command:syntax>
@@ -224,7 +224,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="PackageName"><maml:name>Name</maml:name>
 <maml:Description><maml:para>Specifies the Package Name If Search is set, the name can include the default WQL placeholders [],^,% and _
@@ -233,7 +233,7 @@
 <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
 <dev:type><maml:name>String[]</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Search</maml:name>
 <maml:Description><maml:para>Specifies if Name contains a search string
@@ -251,7 +251,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>CIID</maml:name>
 <maml:Description><maml:para>Specifies the CIID of assigned content.
@@ -260,7 +260,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="PackageType"><maml:name>Type</maml:name>
 <maml:Description><maml:para>Specifies the Package Type
@@ -269,7 +269,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Filter</maml:name>
 <maml:Description><maml:para>Specifies a custom filter to use
@@ -278,7 +278,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 </command:parameters>
 <command:inputTypes></command:inputTypes>
@@ -315,7 +315,7 @@
 <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
 <dev:type><maml:name>String[]</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Source</maml:name>
 <maml:Description><maml:para>Specifies the Affinity Source
@@ -324,7 +324,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 </command:syntaxItem>
 <command:syntaxItem><maml:name>Get-CMUserDeviceAffinity</maml:name>
@@ -335,7 +335,7 @@
 <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
 <dev:type><maml:name>String[]</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Source</maml:name>
 <maml:Description><maml:para>Specifies the Affinity Source
@@ -344,7 +344,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 </command:syntaxItem>
 <command:syntaxItem><maml:name>Get-CMUserDeviceAffinity</maml:name>
@@ -355,7 +355,7 @@
 <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
 <dev:type><maml:name>String[]</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none"><maml:name>UserName</maml:name>
 <maml:Description><maml:para>Specifies the User name If Search is set, the name can include the default WQL placeholders [],^,% and _
@@ -364,7 +364,7 @@
 <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
 <dev:type><maml:name>String[]</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Search</maml:name>
 <maml:Description><maml:para>Specifies if Name contains a search string
@@ -381,7 +381,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 </command:syntaxItem>
 </command:syntax>
@@ -392,7 +392,7 @@
 <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
 <dev:type><maml:name>String[]</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="DeviceID"><maml:name>ResourceID</maml:name>
 <maml:Description><maml:para>Specifies the DeviceID (ResourceID)
@@ -401,7 +401,7 @@
 <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
 <dev:type><maml:name>String[]</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="DeviceName"><maml:name>ResourceName</maml:name>
 <maml:Description><maml:para>Specifies the Device name If Search is set, the name can include the default WQL placeholders [],^,% and _
@@ -410,7 +410,7 @@
 <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
 <dev:type><maml:name>String[]</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none"><maml:name>UserName</maml:name>
 <maml:Description><maml:para>Specifies the User name If Search is set, the name can include the default WQL placeholders [],^,% and _
@@ -419,7 +419,7 @@
 <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
 <dev:type><maml:name>String[]</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Search</maml:name>
 <maml:Description><maml:para>Specifies if Name contains a search string
@@ -437,7 +437,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 </command:parameters>
 <command:inputTypes></command:inputTypes>
@@ -474,7 +474,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>MethodName</maml:name>
 <maml:Description><maml:para>Specifies the Method Name
@@ -483,7 +483,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Arguments</maml:name>
 <maml:Description><maml:para>Specifies the Arguments to be supplied to the method. Should be a hashtable with key/name pairs.
@@ -492,7 +492,7 @@
 <command:parameterValue required="true" variableLength="false">Hashtable</command:parameterValue>
 <dev:type><maml:name>Hashtable</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>SkipValidation</maml:name>
 <maml:Description><maml:para>If set, ReturnValue will not be evaluated Usefull if ReturnValue does not indicated successfull execution
@@ -503,7 +503,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi"><maml:name>WhatIf</maml:name>
-<maml:Description><maml:para>{{Fill WhatIf Description}}
+<maml:Description><maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -511,7 +511,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf"><maml:name>Confirm</maml:name>
-<maml:Description><maml:para>{{Fill Confirm Description}}
+<maml:Description><maml:para>Prompts you for confirmation before running the cmdlet.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -527,7 +527,7 @@
 <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
 <dev:type><maml:name>Object</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>MethodName</maml:name>
 <maml:Description><maml:para>Specifies the Method Name
@@ -536,7 +536,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Arguments</maml:name>
 <maml:Description><maml:para>Specifies the Arguments to be supplied to the method. Should be a hashtable with key/name pairs.
@@ -545,7 +545,7 @@
 <command:parameterValue required="true" variableLength="false">Hashtable</command:parameterValue>
 <dev:type><maml:name>Hashtable</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>SkipValidation</maml:name>
 <maml:Description><maml:para>If set, ReturnValue will not be evaluated Usefull if ReturnValue does not indicated successfull execution
@@ -556,7 +556,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi"><maml:name>WhatIf</maml:name>
-<maml:Description><maml:para>{{Fill WhatIf Description}}
+<maml:Description><maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -564,7 +564,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf"><maml:name>Confirm</maml:name>
-<maml:Description><maml:para>{{Fill Confirm Description}}
+<maml:Description><maml:para>Prompts you for confirmation before running the cmdlet.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -580,7 +580,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="ClassInstance"><maml:name>InputObject</maml:name>
 <maml:Description><maml:para>Specifies the ConfigMgr WMI provider object Needs to be supplied for instance methods
@@ -589,7 +589,7 @@
 <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
 <dev:type><maml:name>Object</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>MethodName</maml:name>
 <maml:Description><maml:para>Specifies the Method Name
@@ -598,7 +598,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Arguments</maml:name>
 <maml:Description><maml:para>Specifies the Arguments to be supplied to the method. Should be a hashtable with key/name pairs.
@@ -607,7 +607,7 @@
 <command:parameterValue required="true" variableLength="false">Hashtable</command:parameterValue>
 <dev:type><maml:name>Hashtable</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>SkipValidation</maml:name>
 <maml:Description><maml:para>If set, ReturnValue will not be evaluated Usefull if ReturnValue does not indicated successfull execution
@@ -619,7 +619,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi"><maml:name>WhatIf</maml:name>
-<maml:Description><maml:para>{{Fill WhatIf Description}}
+<maml:Description><maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.
 </maml:para>
 </maml:Description>
 <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
@@ -628,7 +628,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf"><maml:name>Confirm</maml:name>
-<maml:Description><maml:para>{{Fill Confirm Description}}
+<maml:Description><maml:para>Prompts you for confirmation before running the cmdlet.
 </maml:para>
 </maml:Description>
 <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
@@ -686,7 +686,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none"><maml:name>Credential</maml:name>
 <maml:Description><maml:para>Specifies the Credentials to connect to the Provider Server.
@@ -715,7 +715,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none"><maml:name>Credential</maml:name>
 <maml:Description><maml:para>Specifies the Credentials to connect to the Provider Server.
@@ -761,7 +761,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none"><maml:name>Property</maml:name>
 <maml:Description><maml:para>Specifies the properties to be supplied to the new object
@@ -770,7 +770,7 @@
 <command:parameterValue required="true" variableLength="false">Hashtable</command:parameterValue>
 <dev:type><maml:name>Hashtable</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>ClientOnly</maml:name>
 <maml:Description><maml:para>Specifies if the new instance shall be created on the client only. Will be used for embedded classes without key property
@@ -781,7 +781,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi"><maml:name>WhatIf</maml:name>
-<maml:Description><maml:para>{{Fill WhatIf Description}}
+<maml:Description><maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -789,7 +789,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf"><maml:name>Confirm</maml:name>
-<maml:Description><maml:para>{{Fill Confirm Description}}
+<maml:Description><maml:para>Prompts you for confirmation before running the cmdlet.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -805,7 +805,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none"><maml:name>Property</maml:name>
 <maml:Description><maml:para>Specifies the properties to be supplied to the new object
@@ -814,7 +814,7 @@
 <command:parameterValue required="true" variableLength="false">Hashtable</command:parameterValue>
 <dev:type><maml:name>Hashtable</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>ClientOnly</maml:name>
 <maml:Description><maml:para>Specifies if the new instance shall be created on the client only. Will be used for embedded classes without key property
@@ -826,7 +826,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi"><maml:name>WhatIf</maml:name>
-<maml:Description><maml:para>{{Fill WhatIf Description}}
+<maml:Description><maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.
 </maml:para>
 </maml:Description>
 <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
@@ -835,7 +835,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf"><maml:name>Confirm</maml:name>
-<maml:Description><maml:para>{{Fill Confirm Description}}
+<maml:Description><maml:para>Prompts you for confirmation before running the cmdlet.
 </maml:para>
 </maml:Description>
 <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
@@ -887,7 +887,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none"><maml:name>Source</maml:name>
 <maml:Description><maml:para>Specifies the Package Type
@@ -907,7 +907,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi"><maml:name>WhatIf</maml:name>
-<maml:Description><maml:para>{{Fill WhatIf Description}}
+<maml:Description><maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -915,7 +915,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf"><maml:name>Confirm</maml:name>
-<maml:Description><maml:para>{{Fill Confirm Description}}
+<maml:Description><maml:para>Prompts you for confirmation before running the cmdlet.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -940,7 +940,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none"><maml:name>Source</maml:name>
 <maml:Description><maml:para>Specifies the Package Type
@@ -961,7 +961,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi"><maml:name>WhatIf</maml:name>
-<maml:Description><maml:para>{{Fill WhatIf Description}}
+<maml:Description><maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.
 </maml:para>
 </maml:Description>
 <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
@@ -970,7 +970,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf"><maml:name>Confirm</maml:name>
-<maml:Description><maml:para>{{Fill Confirm Description}}
+<maml:Description><maml:para>Prompts you for confirmation before running the cmdlet.
 </maml:para>
 </maml:Description>
 <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
@@ -1019,7 +1019,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none"><maml:name>Filter</maml:name>
 <maml:Description><maml:para>Specifies the Filter
@@ -1028,10 +1028,10 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi"><maml:name>WhatIf</maml:name>
-<maml:Description><maml:para>{{Fill WhatIf Description}}
+<maml:Description><maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -1039,7 +1039,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf"><maml:name>Confirm</maml:name>
-<maml:Description><maml:para>{{Fill Confirm Description}}
+<maml:Description><maml:para>Prompts you for confirmation before running the cmdlet.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -1055,10 +1055,10 @@
 <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
 <dev:type><maml:name>Object</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi"><maml:name>WhatIf</maml:name>
-<maml:Description><maml:para>{{Fill WhatIf Description}}
+<maml:Description><maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -1066,7 +1066,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf"><maml:name>Confirm</maml:name>
-<maml:Description><maml:para>{{Fill Confirm Description}}
+<maml:Description><maml:para>Prompts you for confirmation before running the cmdlet.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -1082,7 +1082,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none"><maml:name>Filter</maml:name>
 <maml:Description><maml:para>Specifies the Filter
@@ -1091,7 +1091,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="ClassInstance"><maml:name>InputObject</maml:name>
 <maml:Description><maml:para>Specifies the ConfigMgr WMI provider object
@@ -1100,10 +1100,10 @@
 <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
 <dev:type><maml:name>Object</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi"><maml:name>WhatIf</maml:name>
-<maml:Description><maml:para>{{Fill WhatIf Description}}
+<maml:Description><maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.
 </maml:para>
 </maml:Description>
 <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
@@ -1112,7 +1112,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf"><maml:name>Confirm</maml:name>
-<maml:Description><maml:para>{{Fill Confirm Description}}
+<maml:Description><maml:para>Prompts you for confirmation before running the cmdlet.
 </maml:para>
 </maml:Description>
 <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
@@ -1161,7 +1161,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Filter</maml:name>
 <maml:Description><maml:para>Specifies the Filter
@@ -1170,7 +1170,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Property</maml:name>
 <maml:Description><maml:para>Specifies the properties to be set on the instance. Should be a hashtable with key/name pairs.
@@ -1179,7 +1179,7 @@
 <command:parameterValue required="true" variableLength="false">Hashtable</command:parameterValue>
 <dev:type><maml:name>Hashtable</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>PassThru</maml:name>
 <maml:Description><maml:para>Specifies if updated object shall be returned
@@ -1190,7 +1190,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi"><maml:name>WhatIf</maml:name>
-<maml:Description><maml:para>{{Fill WhatIf Description}}
+<maml:Description><maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -1198,7 +1198,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf"><maml:name>Confirm</maml:name>
-<maml:Description><maml:para>{{Fill Confirm Description}}
+<maml:Description><maml:para>Prompts you for confirmation before running the cmdlet.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -1214,7 +1214,7 @@
 <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
 <dev:type><maml:name>Object</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Property</maml:name>
 <maml:Description><maml:para>Specifies the properties to be set on the instance. Should be a hashtable with key/name pairs.
@@ -1223,7 +1223,7 @@
 <command:parameterValue required="true" variableLength="false">Hashtable</command:parameterValue>
 <dev:type><maml:name>Hashtable</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>PassThru</maml:name>
 <maml:Description><maml:para>Specifies if updated object shall be returned
@@ -1234,7 +1234,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi"><maml:name>WhatIf</maml:name>
-<maml:Description><maml:para>{{Fill WhatIf Description}}
+<maml:Description><maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -1242,7 +1242,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf"><maml:name>Confirm</maml:name>
-<maml:Description><maml:para>{{Fill Confirm Description}}
+<maml:Description><maml:para>Prompts you for confirmation before running the cmdlet.
 </maml:para>
 </maml:Description>
 <dev:type><maml:name>SwitchParameter</maml:name>
@@ -1258,7 +1258,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Filter</maml:name>
 <maml:Description><maml:para>Specifies the Filter
@@ -1267,7 +1267,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="ClassInstance"><maml:name>InputObject</maml:name>
 <maml:Description><maml:para>Specifies the ConfigMgr WMI provider object
@@ -1276,7 +1276,7 @@
 <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
 <dev:type><maml:name>Object</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Property</maml:name>
 <maml:Description><maml:para>Specifies the properties to be set on the instance. Should be a hashtable with key/name pairs.
@@ -1285,7 +1285,7 @@
 <command:parameterValue required="true" variableLength="false">Hashtable</command:parameterValue>
 <dev:type><maml:name>Hashtable</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>PassThru</maml:name>
 <maml:Description><maml:para>Specifies if updated object shall be returned
@@ -1297,7 +1297,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi"><maml:name>WhatIf</maml:name>
-<maml:Description><maml:para>{{Fill WhatIf Description}}
+<maml:Description><maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.
 </maml:para>
 </maml:Description>
 <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
@@ -1306,7 +1306,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf"><maml:name>Confirm</maml:name>
-<maml:Description><maml:para>{{Fill Confirm Description}}
+<maml:Description><maml:para>Prompts you for confirmation before running the cmdlet.
 </maml:para>
 </maml:Description>
 <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
@@ -1355,7 +1355,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="LogPath"><maml:name>Path</maml:name>
 <maml:Description><maml:para>The path to the log file to which the Message shall be written. Path and file will be created if it does not exist. If omitted function will use the $LogPath variable defined on script or global level. If that isn't set as well, function will fail
@@ -1364,7 +1364,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="Level"><maml:name>Severity</maml:name>
 <maml:Description><maml:para>Defines the criticality of the log information being written to the log. Can be any of Error, Warning, Informational Default is Info
@@ -1400,7 +1400,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="LogPath"><maml:name>Path</maml:name>
 <maml:Description><maml:para>The path to the log file to which the Message shall be written. Path and file will be created if it does not exist. If omitted function will use the $LogPath variable defined on script or global level. If that isn't set as well, function will fail
@@ -1409,7 +1409,7 @@
 <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
 <dev:type><maml:name>String</maml:name>
 <maml:uri /></dev:type>
-<dev:defaultValue></dev:defaultValue>
+<dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="Level"><maml:name>Severity</maml:name>
 <maml:Description><maml:para>Defines the criticality of the log information being written to the log. Can be any of Error, Warning, Informational Default is Info
@@ -1441,7 +1441,7 @@
 </command:parameters>
 <command:inputTypes></command:inputTypes>
 <command:returnValues></command:returnValues>
-<maml:alertSet><maml:alert><maml:para>
+<maml:alertSet><maml:alert><maml:para>Let's add some notes
 </maml:para>
 </maml:alert>
 </maml:alertSet>

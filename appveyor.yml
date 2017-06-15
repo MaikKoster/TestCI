@@ -2,7 +2,7 @@
 build: off
 
 # Version number
-version: 0.1.{build}
+version: 0.1.38+{build}
 
 skip_commits:
   files:
@@ -12,20 +12,21 @@ skip_commits:
     - .vscode
   message: /updated readme.*|update readme.*s|update docs.*|update version.*|update appveyor.*/
 
-pull_requests:
-  do_not_increment_build_number: true
-
-branches:
-  only:
-  - master
+skip_tags: true
 
 #skip_non_tags: true
 
 environment:
   GitHubKey:
     secure: sF4El1RbRQ5kkI1+K5sv9AZlwkaJE9OeOyUnTBwtVyNeo7krRP0V1C607Tal3sUQ
-  NuGetKey:
+  PSGalleryKey:
     secure: JIP/CzuBZTaDq9NS7FAzcAjZVq0kWfM1+KVMDm3IvbIFDdD1RX0MHShhYpohD3Iv
+  MyGetKey:
+    secure: +zNd+M9Zr3ExXd1c8HWy5+1VTRY47TojC68Z7ohSu5DRHVQ1otFoc5lm6VULA6l2
+  AppVeyorKey:
+    secure: Fc+eB7vimbVerpEWtHarUSC0fM5e1zTOBxJ7Rwwxqdc=
+  CoverallKey:
+    secure: B6WYS2545rt4xY3DvP9Wy8tHKwP/JPckyvTZ5vpCj451oeD06iL+th4wNQgpntbg
 
 # Allow WMF5 (i.e. PowerShellGallery functionality)
 os: WMF 5
@@ -42,31 +43,38 @@ init:
       Install-Module InvokeBuild -Force
 
 build_script:
-  - ps: Invoke-Build -Task Build
+  - ps: |
+      if ($Env:APPVEYOR_REPO_BRANCH -eq 'master') {
+        # Build and create a new release on GitHub when building on master
+        Invoke-Build -Task BuildAndRelease
+      } else {
+        # Build only
+        Invoke-Build
+      }
 
-after_build:
-  - 7z a ConfigMgr.zip %APPVEYOR_BUILD_FOLDER%\artifacts\ConfigMgr
-
-artifacts:
-  - path: ConfigMgr.zip
 
 on_success:
-  - git checkout master
-  - git add --all
-  - git reset -- ConfigMgr.zip
-  - git status
-  - git commit -s -m "Update version to %APPVEYOR_BUILD_VERSION%"
-  - git push origin master
+#  - git checkout master
+#  - git add --all
+#  - git reset -- ConfigMgr.zip
+#  - git status
+#  - git commit -s -m "Update version to %APPVEYOR_BUILD_VERSION%"
+#  - git push origin master
 
-deploy:
-  release: v$(appveyor_build_version)
-  description: 'Release description'
-  provider: GitHub
-  auth_token:
-    secure: sF4El1RbRQ5kkI1+K5sv9AZlwkaJE9OeOyUnTBwtVyNeo7krRP0V1C607Tal3sUQ
-  artifact: ConfigMgr.zip
-  draft: true
-  prerelease: false
-  #force_update: true
-  on:
-    branch: master                 # release from master branch only
+# artifacts:
+#   - path: artifacts\ConfigMgr-$(appveyor_build_version).zip
+#     name: ConfigMgr-$(appveyor_build_version).zip
+
+
+
+
+
+
+
+
+
+
+
+
+
+
