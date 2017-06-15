@@ -179,7 +179,7 @@ task Version LoadModuleManifest, {
 
 # Synopsis: Updates the Module manifest version
 # Module manifest is SPOT for version. Handle with care.
-task UpdateModuleManifest {
+task UpdateModuleManifest Version, {
     # Update Modulemanifest
     if ($Manifest.ModuleVersion -ne $Version) {
         Write-Output "      Update the module manifest version ($($Manifest.ModuleVersion)) to $(($Version).ToString())"
@@ -189,14 +189,26 @@ task UpdateModuleManifest {
 
 # Synposis. Updates the download link in the ReadMe file
 # Should only be called when a release is pushed
-task UpdateReadMe {
+task UpdateReadMe Version, {
     $ReadMePath = Join-Path -Path $BuildRoot -ChildPath 'README.md'
 
     if (Test-Path ($ReadMePath)) {
-        Write-Output '      Update download link in README.md'
+        Write-Output "      Update ReadMe"
+
         $ReadMe = Get-Content -Path $ReadMePath -Raw
-        $NewDownloadLink = "$ModuleWebsite/releases/download/v$Version/$ModuleToBuild-$Version.zip"
-        $ReadMe -replace "$ModuleWebsite.+$ModuleToBuild.zip", $NewDownloadLink | Set-Content -Path $ReadMePath -Force -Encoding UTF8
+        # Remove several empty lines
+        Write-Output "      Remove multiple empty lines"
+        $EmptyLinesRegex = '(?:\r\n[\s-[\rn]]*){3,}'
+        $ReadMe = $ReadMe -replace $EmptyLinesRegex, "$([Environment]::NewLine)$([Environment]::NewLine)"
+
+        Write-Output '      Update download link'
+        Write-Output "LinkRegex: $LinkRegex"
+        $NewDownloadLink = "[$ModuleToBuild-$Version.zip]($ModuleWebsite/releases/download/v$Version/$ModuleToBuild-$Version.zip)"
+        $ReadMe = $ReadMe -replace $LinkRegex, $NewDownloadLink
+
+        # Write back changes
+        Write-Output "      Save changes to '$ReadMepath'"
+        $ReadMe | Set-Content -Path $ReadMePath -Encoding UTF8 -Force
 
         if (Test-Path $StageReleasePath) {
             # Copy updated file to the Release folder
@@ -727,14 +739,19 @@ task UpdateReleaseNotes Version, {
                 Write-Output "      Create GitHub 'Compare' link"
             }
 
+            # Remove several empty lines
+            Write-Output "      Remove multiple empty lines"
+            $EmptyLinesRegex = '(?:\r\n[\s-[\rn]]*){3,}'
+            $ReleaseNotes = $ReleaseNotes -replace "$EmptyLinesRegex", "$([Environment]::NewLine)$([Environment]::NewLine)"
+
             # Write back changes
-            $ReleaseNotes | Set-Content -Path $ReleaseNotesPath -Encoding UTF8
             Write-Output "      Save changes to '$ReleaseNotesPath'"
+            $ReleaseNotes | Set-Content -Path $ReleaseNotesPath -Encoding UTF8
 
             if (Test-Path $StageReleasePath) {
                 # Copy updated file to the Release folder
-                Copy-Item -Path $ReleaseNotesPath -Destination $StageReleasePath -Force
                 Write-Output "      Copy updated Release Notes to '$StageReleasePath'"
+                Copy-Item -Path $ReleaseNotesPath -Destination $StageReleasePath -Force
             }
         } else {
             Write-Warning "      No Release Notes found at '$ReleaseNotesPath'"

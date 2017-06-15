@@ -10,7 +10,7 @@ skip_commits:
     - appveyor.yml
     - docs/*
     - .vscode
-  message: /updated readme.*|update readme.*s|update docs.*|update version.*|update appveyor.*/
+  message: /updated readme.*|update readme.*s|update docs.*|update version.*|update appveyor.*|v\d\.\d\.\d+/
 
 skip_tags: true
 
@@ -64,6 +64,25 @@ on_success:
 # artifacts:
 #   - path: artifacts\ConfigMgr-$(appveyor_build_version).zip
 #     name: ConfigMgr-$(appveyor_build_version).zip
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
