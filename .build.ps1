@@ -605,7 +605,9 @@ task GitHubPush GetReleaseNotes, {
     Write-Output "      Commit and push changes"
     Write-Output "      Current Branch: $CurrentBranch"
     Write-Output "      git checkout $CurrentBranch"
-    exec { git checkout $CurrentBranch }
+    try {
+        exec { git checkout $CurrentBranch }
+    } catch {}
     Write-Output '      git add --all'
     exec { git add --all }
     Write-Output '      git status'
