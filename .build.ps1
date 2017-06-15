@@ -572,7 +572,7 @@ task GitHubPushRelease Version, UpdateReadMe, UpdateReleaseNotes, PrepareArtifac
         Write-Output "      Create new release 'v$Version'"
         $result = Invoke-RestMethod @releaseParams
 
-        $ZippedRelease = Resolve-Path -Path $ZippedReleasePath -Leaf
+        $ZippedRelease = Split-Path -Path $ZippedReleasePath -Leaf
 
         $uploadUri = $result | Select-Object -ExpandProperty upload_url
         $uploadUri = $uploadUri -replace '\{\?name,label\}', "?name=$ZippedRelease"
