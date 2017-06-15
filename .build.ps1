@@ -606,6 +606,10 @@ task GitHubPush GetReleaseNotes, {
     Write-Output "      Current Branch: $CurrentBranch"
     Write-Output "      git checkout $CurrentBranch"
     try {
+        # AppVeyor checks out only the latest commit. Get the whole branch
+        # Embedded in try/catch as the notification about switching branches
+        # is interpreted as error by the exec command
+        git checkout $CurrentBranch
         exec { git checkout $CurrentBranch }
     } catch {}
     Write-Output '      git add --all'
@@ -616,7 +620,9 @@ task GitHubPush GetReleaseNotes, {
     exec { git commit -s -m "v$($Version)"}
 
     Write-Output "      git push origin $CurrentBranch"
-    exec { git push origin $CurrentBranch }
+    try {
+        exec { git push origin $CurrentBranch }
+    } catch {}
 	$changes = exec { git status --short }
 	assert (-not $changes) 'Please, commit changes.'
 }
