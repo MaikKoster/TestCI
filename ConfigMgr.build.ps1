@@ -511,20 +511,24 @@ task CreateMarkdownHelp GetPublicFunctions, {
 
 # Synopsis: Build the external help files with PlatyPS
 task CreateExternalHelp {
-    Write-Output "      Create external help file at '$ModulePath\en-US'"
-    if (-not(Test-Path -Path "$ModulePath\en-US")) {
-        $null = New-Item -ItemType Directory -Path "$ModulePath\en-US" -Force
+    $HelpPath = Join-Path -Path $StageReleasePath -ChildPath "en-US"
+
+    Write-Output "      Create external help file at '$HelpPath'"
+    if (-not(Test-Path -Path "$HelpPath")) {
+        $null = New-Item -ItemType Directory -Path "$MHelpPath" -Force
     }
-    $null = New-ExternalHelp $DocumentsPath -OutputPath "$ModulePath\en-US\" -Force
+    $null = New-ExternalHelp $DocumentsPath -OutputPath "$HelpPath\" -Force
 }
 
 # Synopsis: Build the help file CAB with PlatyPS
-task CreateUpdateableHelpCAB {
+task CreateUpdateableHelpCAB CreateExternalHelp,  {
     Write-Output '      Create updateable help cab file'
     # Remove files from previous build as New-ExternalHelpCab will fail otherwise
-    $null = Get-ChildItem -Path "$ModulePath\en-US\$($ModuleToBuild)_*"  | Remove-Item -Force
+    $HelpPath = Join-Path -Path $StageReleasePath -ChildPath "en-US"
+
+    $null = Get-ChildItem -Path "$HelpPath\$($ModuleToBuild)_*"  | Remove-Item -Force
     $LandingPage = "$DocumentsPath\$ModuleToBuild.md"
-    $null = New-ExternalHelpCab -CabFilesFolder "$($ModulePath)\en-US\" -LandingPagePath $LandingPage -OutputFolder "$($ModulePath)\en-US\"
+    $null = New-ExternalHelpCab -CabFilesFolder "$HelpPath\" -LandingPagePath $LandingPage -OutputFolder "$HelpPath\"
 }
 
 # Synopsis: Push with a version tag.
@@ -716,7 +720,7 @@ task UpdateReleaseNotes Version, {
             if (-not([string]::IsNullOrEmpty($LastVersion))) {
                 Write-Output "      Last Version: $LastVersion"
                 # Build GitHub compare string
-                $CompareLink = "($ModuleWebsite/compare/v$LastVersion...v$Version)#"
+                $CompareLink = "($ModuleWebsite/compare/v$LastVersion...v$Version)"
                 # Need to use a Regex object as -replace does not support replacing individual occurences
                 $CompareRegEx = [Regex]'(?<=\[Full Changelog\])(.*)'
                 $ReleaseNotes = $CompareRegEx.Replace($ReleaseNotes,$CompareLink,1)
@@ -767,18 +771,18 @@ task BuildSessionCleanup {
 # Synopsis: The default build
 task . `
         Configure,
+        PrepareStage,
         CreateHelp,
         RunTests,
-        PrepareStage,
         CreateModulePSM1,
         PrepareArtifacts,
         BuildSessionCleanup
 
 task BuildAndPush `
         Configure,
+        PrepareStage,
         CreateHelp,
         RunTests,
-        PrepareStage,
         CreateModulePSM1,
         PrepareArtifacts,
         GitHubPush,
@@ -786,9 +790,9 @@ task BuildAndPush `
 
 task BuildAndRelease `
         Configure,
+        PrepareStage,
         CreateHelp,
         RunTests,
-        PrepareStage,
         CreateModulePSM1,
         GitHubPushRelease,
         BuildSessionCleanup
