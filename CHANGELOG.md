@@ -1,7 +1,7 @@
 ﻿# ConfigMgr Module Release History
 
-## [0.1.39] - Unreleased
-[Full Changelog](https://github.com/MaikKoster/TestCI/compare/v0.1.38...v0.1.38)
+## [0.1.39] - 2017-06-15
+[Full Changelog](https://github.com/MaikKoster/TestCI/compare/v0.1.38...v0.1.39)
 
 - Tweaked Build Process
 - blablabla
@@ -58,6 +58,7 @@ Initial release with the following features:
 - Create connection to ConfigMgr Provider
 - Get, Update and Remove generic ConfigMgr objects
 - Invoke generic ConfigMgr methods
+
 
 
 
