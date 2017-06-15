@@ -537,7 +537,7 @@ task GitHubPushRelease Version, UpdateReadMe, UpdateReleaseNotes, PrepareArtifac
     #if ($ENV:APPVEYOR_REPO_BRANCH -eq 'master' -and [string]::IsNullOrWhiteSpace($ENV:APPVEYOR_PULL_REQUEST_NUMBER)) {
         #Create GitHub release
         Write-Output '      Start GitHub release'
-        $GitHubApiUri = ($ModuleWebsite -replace "https://github.com", "https://api.github.repos")
+        $GitHubApiUri = ($ModuleWebsite -replace "https://github.com", "https://api.github.com/repos")
         if ($Env:APPVEYOR) {
             $CurrentBranch = $Env:APPVEYOR_REPO_BRANCH
         } else {
