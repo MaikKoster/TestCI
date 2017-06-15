@@ -610,7 +610,7 @@ task GitHubPush GetReleaseNotes, {
         # Embedded in try/catch as the notification about switching branches
         # is interpreted as error by the exec command
         git checkout $CurrentBranch
-        exec { git checkout $CurrentBranch }
+        #exec { git checkout $CurrentBranch }
     } catch {}
     Write-Output '      git add --all'
     exec { git add --all }
