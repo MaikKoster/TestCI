@@ -1340,7 +1340,7 @@
 <command:details><command:name>Write-Log</command:name>
 <command:verb>Write</command:verb>
 <command:noun>Log</command:noun>
-<maml:description><maml:para>Write-Log writes a message to a specified log file with the current time stamp.
+<maml:description><maml:para>Write-Log writes a message to a specified log file with the current time stamp. Test
 </maml:para>
 </maml:description>
 </command:details>

@@ -5,6 +5,7 @@ schema: 2.0.0
 ---
 
 # New-CMUserDeviceAffinity
+
 ## SYNOPSIS
 Creates a new User device affinity
 
@@ -63,7 +64,7 @@ Aliases:
 
 Required: True
 Position: 2
-Default value: 
+Default value: None
 Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
@@ -99,7 +100,8 @@ Accept wildcard characters: False
 ```
 
 ### -WhatIf
-{{Fill WhatIf Description}}
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
 
 ```yaml
 Type: SwitchParameter
@@ -108,13 +110,13 @@ Aliases: wi
 
 Required: False
 Position: Named
-Default value: 
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -Confirm
-{{Fill Confirm Description}}
+Prompts you for confirmation before running the cmdlet.
 
 ```yaml
 Type: SwitchParameter
@@ -123,7 +125,7 @@ Aliases: cf
 
 Required: False
 Position: Named
-Default value: 
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

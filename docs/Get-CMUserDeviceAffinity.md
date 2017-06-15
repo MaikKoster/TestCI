@@ -5,6 +5,7 @@ schema: 2.0.0
 ---
 
 # Get-CMUserDeviceAffinity
+
 ## SYNOPSIS
 Gets user device affinities
 
@@ -47,7 +48,7 @@ Aliases: RelationshipResourceID
 
 Required: True
 Position: Named
-Default value: 
+Default value: None
 Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
@@ -62,7 +63,7 @@ Aliases: DeviceID
 
 Required: True
 Position: Named
-Default value: 
+Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
@@ -78,7 +79,7 @@ Aliases: DeviceName
 
 Required: False
 Position: Named
-Default value: 
+Default value: None
 Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
@@ -94,7 +95,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: 
+Default value: None
 Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
@@ -124,7 +125,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: 
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
