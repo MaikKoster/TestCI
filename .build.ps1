@@ -538,7 +538,11 @@ task GitHubPushRelease Version, UpdateReadMe, UpdateReleaseNotes, PrepareArtifac
         #Create GitHub release
         Write-Output '      Start GitHub release'
         $GitHubApiUri = ($ModuleWebsite -replace "https://github.com", "https://api.github.repos")
-        $CurrentBranch = Get-GitBranch
+        if ($Env:APPVEYOR) {
+            $CurrentBranch = $Env:APPVEYOR_REPO_BRANCH
+        } else {
+            $CurrentBranch = Get-GitBranch
+        }
 
         $releaseData = @{
             tag_name         = "v$Version"
@@ -592,10 +596,16 @@ task GitHubPushRelease Version, UpdateReadMe, UpdateReleaseNotes, PrepareArtifac
 
 # Synopsis: Commit changes and push to github
 task GitHubPush GetReleaseNotes, {
-    $CurrentBranch = Get-GitBranch
+    if ($Env:APPVEYOR) {
+        $CurrentBranch = $Env:APPVEYOR_REPO_BRANCH
+    } else {
+        $CurrentBranch = Get-GitBranch
+    }
 
-    #Write-Output "      git checkout $CurrentBranch"
-    #exec { git checkout $CurrentBranch }
+    Write-Output "      Commit and push changes"
+    Write-Output "      Current Branch: $CurrentBranch"
+    Write-Output "      git checkout $CurrentBranch"
+    exec { git checkout $CurrentBranch }
     Write-Output '      git add --all'
     exec { git add --all }
     Write-Output '      git status'
