@@ -18,7 +18,7 @@ skip_tags: true
 
 environment:
   GitHubKey:
-    secure: sF4El1RbRQ5kkI1+K5sv9AZlwkaJE9OeOyUnTBwtVyNeo7krRP0V1C607Tal3sUQ
+    secure: Al3nrNPbCZ0adJ4kuKwbI6FFgxmqqHk8uLaVuZNtRV0jl46uAsd+Ik6NmVnePvQJ
   PSGalleryKey:
     secure: JIP/CzuBZTaDq9NS7FAzcAjZVq0kWfM1+KVMDm3IvbIFDdD1RX0MHShhYpohD3Iv
   MyGetKey:
